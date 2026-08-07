@@ -1,0 +1,147 @@
+@import "tailwindcss";
+
+/* ============================================================
+   CoinJecko / Finance Hub — design tokens
+   Identity: calm, analytical, data-aware. Deep harbour blue-green
+   base, jade brand, amber signal. Market movement is never colour
+   alone — pair with ▲ / ▼ and text (see .delta-*).
+   Light/dark: system preference by default, explicit override via
+   html[data-theme]. Urdu (RTL) uses a Nastaliq-first stack.
+   ============================================================ */
+
+:root {
+  --canvas: #f7f8f7;
+  --surface: #ffffff;
+  --surface-raised: #eef1f0;
+  --ink: #17242b;
+  --ink-muted: #51636d;
+  --border: #d7dedd;
+  --brand: #0f766e;        /* jade */
+  --brand-strong: #0b5a54;
+  --brand-contrast: #ffffff;
+  --accent: #b45309;       /* amber signal */
+  --up: #15803d;
+  --down: #b91c1c;
+  --focus: #b45309;
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-urdu: "Noto Nastaliq Urdu", "Jameel Noori Nastaleeq",
+    "Urdu Typesetting", "Nafees Nastaleeq", serif;
+  --font-mono: ui-monospace, "Cascadia Code", "Segoe UI Mono", Menlo, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --canvas: #0d1518;
+    --surface: #131e22;
+    --surface-raised: #1b2930;
+    --ink: #e7edee;
+    --ink-muted: #9db0b7;
+    --border: #2a3b42;
+    --brand: #2dd4bf;
+    --brand-strong: #5eead4;
+    --brand-contrast: #06302c;
+    --accent: #fbbf24;
+    --up: #4ade80;
+    --down: #f87171;
+    --focus: #fbbf24;
+  }
+}
+
+:root[data-theme="dark"] {
+  --canvas: #0d1518;
+  --surface: #131e22;
+  --surface-raised: #1b2930;
+  --ink: #e7edee;
+  --ink-muted: #9db0b7;
+  --border: #2a3b42;
+  --brand: #2dd4bf;
+  --brand-strong: #5eead4;
+  --brand-contrast: #06302c;
+  --accent: #fbbf24;
+  --up: #4ade80;
+  --down: #f87171;
+  --focus: #fbbf24;
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-border: var(--border);
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-brand-contrast: var(--brand-contrast);
+  --color-accent: var(--accent);
+  --color-up: var(--up);
+  --color-down: var(--down);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+}
+
+html {
+  color-scheme: light dark;
+}
+
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
+
+body {
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+}
+
+/* Urdu typography: Nastaliq needs generous line height. */
+html[lang="ur"] body {
+  font-family: var(--font-urdu);
+  line-height: 2;
+}
+
+html[lang="ur"] .font-latin {
+  font-family: var(--font-sans);
+}
+
+/* Accessible focus — never remove, always visible. */
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Skip link appears on focus. */
+.skip-link {
+  position: absolute;
+  inset-inline-start: 0.75rem;
+  top: -100%;
+  z-index: 100;
+  padding: 0.5rem 1rem;
+  background: var(--brand);
+  color: var(--brand-contrast);
+  border-radius: 0.375rem;
+  transition: top 120ms ease;
+}
+.skip-link:focus {
+  top: 0.75rem;
+}
+
+/* Market movement: colour + symbol + text, never colour alone. */
+.delta-up { color: var(--up); }
+.delta-down { color: var(--down); }
+.delta-up::before { content: "▲ "; }
+.delta-down::before { content: "▼ "; }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

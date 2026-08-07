@@ -1,0 +1,195 @@
+{
+  "site": {
+    "name": "CoinJecko Finance Hub",
+    "shortName": "Finance Hub",
+    "tagline": "Markets Explained. Data Connected. Decisions Informed.",
+    "description": "A bilingual global market intelligence platform connecting financial news, live market data and practical money knowledge for emerging and international audiences."
+  },
+  "nav": {
+    "markets": "Markets",
+    "crypto": "Crypto",
+    "forex": "Forex",
+    "commodities": "Commodities",
+    "economy": "Economy",
+    "business": "Business",
+    "personalFinance": "Personal Finance",
+    "worldMarketMap": "World Market Map",
+    "menu": "Menu",
+    "closeMenu": "Close menu"
+  },
+  "a11y": {
+    "skipToContent": "Skip to main content",
+    "switchLanguage": "زبان: اردو",
+    "switchLanguageLabel": "Read this page in Urdu",
+    "toggleTheme": "Toggle dark or light theme",
+    "mainNavigation": "Main navigation",
+    "footerNavigation": "Footer navigation",
+    "breadcrumbs": "Breadcrumbs"
+  },
+  "home": {
+    "heroTitle": "The world's markets, explained in your language",
+    "heroLead": "Global finance news, market data and practical money knowledge — connecting Pakistan, South Asia, the Gulf and international markets in English and Urdu.",
+    "exchangeStatusTitle": "World exchange status",
+    "exchangeStatusLead": "Live trading-session status for major exchanges, computed from official local trading hours.",
+    "exchangeStatusNote": "Session status is calculated from regular local trading hours and does not yet account for public holidays or special sessions.",
+    "seriesTitle": "Our editorial series",
+    "seriesLead": "Recurring, data-aware briefings — not clickbait.",
+    "newsroomTitle": "Newsroom",
+    "newsroomComing": "The newsroom launches with our content system. Articles will carry named authors, publication and update dates, sources and a corrections trail.",
+    "open": "Open",
+    "closed": "Closed",
+    "localTime": "Local time",
+    "tradingHours": "Trading hours"
+  },
+  "series": {
+    "globalMarketPulse": {
+      "title": "The Global Market Pulse",
+      "description": "A daily summary of major movements across global exchanges."
+    },
+    "pakistanRupeeWatch": {
+      "title": "The Pakistan Rupee Watch",
+      "description": "Recurring analysis of PKR movements, currency pressure and regional market context."
+    },
+    "exchangeOpeningBell": {
+      "title": "The Exchange Opening Bell",
+      "description": "A market-opening briefing for major global exchanges."
+    },
+    "cryptoContextReport": {
+      "title": "The Crypto Context Report",
+      "description": "Crypto price movement explained through market data, liquidity, regulation and macro context."
+    },
+    "marketCloseExplained": {
+      "title": "The Market Close Explained",
+      "description": "A simple explanation of what moved markets during the trading session."
+    },
+    "worldMarketMap": {
+      "title": "The World Market Map",
+      "description": "A visual overview of open, closed and active financial markets worldwide."
+    }
+  },
+  "markets": {
+    "title": "World Market Map",
+    "lead": "Open and closed trading sessions across the world's major exchanges, with regional hubs and plain-language index guides.",
+    "regionsTitle": "Regional market hubs",
+    "indicesTitle": "Major indices",
+    "exchangesTitle": "Exchanges",
+    "marketHours": "Market hours",
+    "currency": "Currency",
+    "exchange": "Exchange",
+    "country": "Country",
+    "timezone": "Timezone",
+    "tradingWeek": "Trading week",
+    "localTime": "Local time",
+    "whatItIs": "What this market is",
+    "whyItMatters": "Why this market matters",
+    "faqTitle": "Frequently asked questions",
+    "dataTitle": "Market data",
+    "chartTitle": "Historical chart",
+    "chartComing": "Historical charts activate once a licensed data provider is connected. We do not display estimated or fabricated prices.",
+    "relatedIndices": "Indices in this hub",
+    "backToMap": "World Market Map",
+    "open": "Open",
+    "closed": "Closed",
+    "holidayCaveat": "Session status is calculated from regular local trading hours and does not yet account for public holidays or special sessions.",
+    "regionLabels": {
+      "north_america": "North America",
+      "europe": "Europe",
+      "asia_pacific": "Asia-Pacific",
+      "south_asia": "South Asia",
+      "middle_east": "Middle East"
+    },
+    "dayNames": {
+      "1": "Mon",
+      "2": "Tue",
+      "3": "Wed",
+      "4": "Thu",
+      "5": "Fri",
+      "6": "Sat",
+      "7": "Sun"
+    }
+  },
+  "assets": {
+    "cryptoTitle": "Crypto",
+    "cryptoLead": "Cryptocurrency markets explained through data, liquidity, regulation and macro context — not hype.",
+    "cryptoRisk": "Cryptocurrency markets are highly volatile and may be treated differently by regulators in your jurisdiction. Nothing on this page is investment advice.",
+    "coinsTitle": "Assets",
+    "forexTitle": "Forex",
+    "forexLead": "Exchange rates and the currency corridors that matter to our readers — from USD/PKR to the global majors.",
+    "pairsTitle": "Currency pairs",
+    "pkrCorridors": "PKR corridors",
+    "majors": "Global majors",
+    "commoditiesTitle": "Commodities",
+    "commoditiesLead": "Gold, silver and oil benchmarks — the prices behind fuel bills, jewellery and trade balances.",
+    "converterTitle": "Currency converter",
+    "converterLead": "Convert between currencies using licensed live rates.",
+    "amount": "Amount",
+    "from": "From",
+    "to": "To",
+    "convert": "Convert",
+    "converterUnavailable": "Live exchange rates are not yet connected. The converter activates once a licensed rates provider is configured — we do not estimate or fabricate rates.",
+    "adviceQuestion": "Is this investment advice?",
+    "adviceAnswer": "No. CoinJecko / Finance Hub publishes market information and educational context only. Always conduct independent research and consult a qualified professional before making financial decisions.",
+    "unit": "Unit",
+    "quotedIn": "Quoted in",
+    "symbol": "Symbol"
+  },
+  "economy": {
+    "title": "Economy & Economic Calendar",
+    "lead": "The scheduled decisions and data releases that move markets — explained, graded by importance, and filterable by country.",
+    "liveTitle": "Upcoming events",
+    "liveGate": "The live economic calendar activates once an events data provider is connected. Until then, the guide below explains every recurring release we track — we do not publish invented dates or forecasts.",
+    "guideTitle": "Economic Event Watch: what moves markets",
+    "guideLead": "A plain-language guide to the recurring releases and decisions behind market moves.",
+    "filterCountry": "Country",
+    "filterImportance": "Importance",
+    "allCountries": "All countries",
+    "allLevels": "All levels",
+    "publisher": "Publisher",
+    "cadence": "Cadence",
+    "noMatches": "No events match these filters.",
+    "importanceTitle": "How we grade importance",
+    "importanceHigh": "High",
+    "importanceMedium": "Medium",
+    "importanceLow": "Low",
+    "importanceHighDesc": "Regularly moves prices across asset classes the moment it lands.",
+    "importanceMediumDesc": "Moves markets when it surprises against expectations.",
+    "importanceLowDesc": "Background data — matters for trends, rarely for the trading day.",
+    "actual": "Actual",
+    "forecast": "Forecast",
+    "previous": "Previous"
+  },
+  "data": {
+    "dataProvider": "Data provider",
+    "lastUpdated": "Last updated",
+    "delayedNotice": "Market data delayed by {minutes} minutes where applicable.",
+    "notConnected": "Live data provider not yet connected.",
+    "notAdvice": "Market data is provided for information only and is not financial advice."
+  },
+  "footer": {
+    "about": "About",
+    "trust": "Trust & Policies",
+    "legal": "Legal",
+    "languages": "Languages",
+    "editorialPolicy": "Editorial Policy",
+    "correctionsPolicy": "Corrections Policy",
+    "privacyPolicy": "Privacy Policy",
+    "cookiePolicy": "Cookie Policy",
+    "termsOfUse": "Terms of Use",
+    "advertisingDisclosure": "Advertising Disclosure",
+    "financialDisclaimer": "Financial Disclaimer",
+    "dataRequest": "Data Request Contact",
+    "rightsReserved": "All rights reserved."
+  },
+  "disclaimer": {
+    "short": "CoinJecko / Finance Hub provides financial news, market data, educational material and analysis for informational purposes only. Market data may be delayed, incomplete or supplied by third-party providers. Nothing published on this platform constitutes personal financial, investment, tax or legal advice. Always conduct independent research and consult an appropriately qualified professional before making financial decisions."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The page you are looking for does not exist or has moved.",
+    "backHome": "Back to the homepage"
+  },
+  "legalNotice": {
+    "draft": "This document is a working draft. Obtain professional legal review for every jurisdiction you serve before commercial launch.",
+    "urduPending": ""
+  }
+}
