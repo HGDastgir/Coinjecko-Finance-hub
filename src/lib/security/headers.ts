@@ -55,7 +55,10 @@ export function buildContentSecurityPolicy({
     `default-src ${SELF}`,
     scriptSrc,
     `style-src ${SELF} 'unsafe-inline'`,
-    `img-src ${SELF} data: blob:`,
+    // Coin logos from CoinGecko's image CDN. Must stay in step with
+    // `remotePatterns` in next.config.ts — Next's optimiser and the CSP
+    // are two independent gates and both have to allow the host.
+    `img-src ${SELF} data: blob: https://coin-images.coingecko.com`,
     `font-src ${SELF}`,
     `connect-src ${connect}${isDev ? " ws:" : ""}`,
     `media-src ${SELF}`,

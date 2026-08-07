@@ -205,7 +205,14 @@
     "volume24h": "24 گھنٹے کا حجم",
     "unavailable": "زندہ مارکیٹ ڈیٹا عارضی طور پر دستیاب نہیں۔ پرانی قیمت دکھانے کے بجائے کچھ نہیں دکھایا جا رہا۔",
     "quotedAt": "وقتِ اندراج",
-    "attribution": "ڈیٹا بشکریہ CoinGecko"
+    "attribution": "ڈیٹا بشکریہ CoinGecko",
+    "chart7d": "7 دن کا چارٹ",
+    "search": "سکے تلاش کریں",
+    "searchPlaceholder": "نام یا علامت تلاش کریں…",
+    "filterAll": "تمام",
+    "filterGainers": "بڑھنے والے",
+    "filterLosers": "گھٹنے والے",
+    "noMatches": "آپ کی تلاش سے کوئی سکہ نہیں ملا۔"
   },
   "globalStats": {
     "heading": "عالمی کرپٹو مارکیٹ کے اعداد و شمار",

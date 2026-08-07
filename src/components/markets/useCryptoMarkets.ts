@@ -21,6 +21,8 @@ export interface CryptoQuoteView {
   marketCapUsd: number | null;
   volume24hUsd: number | null;
   marketCapRank: number | null;
+  logoUrl: string | null;
+  sparkline7d: number[];
   quotedAt: string;
 }
 

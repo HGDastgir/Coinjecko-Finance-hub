@@ -81,6 +81,21 @@ const marketRowSchema = z.object({
   total_volume: z.number().finite().nonnegative().nullable(),
   market_cap_rank: z.number().int().positive().nullable(),
   last_updated: z.string(),
+  // Logo URL. Constrained to CoinGecko's image CDN so a compromised or
+  // changed upstream cannot point our <Image> at an arbitrary host —
+  // the CSP and next.config allow-list only cover this one origin.
+  image: z
+    .string()
+    .url()
+    .refine((u) => u.startsWith("https://coin-images.coingecko.com/"), {
+      message: "unexpected image host",
+    })
+    .nullable()
+    .catch(null),
+  sparkline_in_7d: z
+    .object({ price: z.array(z.number().finite()) })
+    .nullable()
+    .catch(null),
 });
 
 const marketsSchema = z.array(marketRowSchema);
@@ -96,6 +111,10 @@ export interface CryptoQuote {
   marketCapUsd: number | null;
   volume24hUsd: number | null;
   marketCapRank: number | null;
+  /** Always a coin-images.coingecko.com URL, or null. */
+  logoUrl: string | null;
+  /** 7-day price series for the sparkline; empty when unavailable. */
+  sparkline7d: number[];
   /** Provider's timestamp for this quote, not our fetch time. */
   quotedAt: string;
 }
@@ -105,6 +124,15 @@ export interface CryptoMarketData {
   source: "CoinGecko";
   sourceUrl: string;
   fetchedAt: string;
+}
+
+/** Keeps the first and last point so the series still spans 7 days. */
+function everyNth(series: number[], n: number): number[] {
+  if (series.length <= 2) return series;
+  const thinned = series.filter((_, i) => i % n === 0);
+  const last = series[series.length - 1];
+  if (thinned[thinned.length - 1] !== last) thinned.push(last);
+  return thinned;
 }
 
 const SLUG_BY_COINGECKO_ID = new Map(
@@ -230,7 +258,7 @@ async function requestMarkets(): Promise<CryptoMarketData | null> {
   );
   if (ids.length === 0) return null;
 
-  const url = `${ENDPOINT}?vs_currency=usd&ids=${ids.join(",")}&order=market_cap_desc&price_change_percentage=24h`;
+  const url = `${ENDPOINT}?vs_currency=usd&ids=${ids.join(",")}&order=market_cap_desc&price_change_percentage=24h&sparkline=true`;
 
   // The free tier needs no key; a demo key raises the rate limit when
   // one is configured. Never exposed to the browser.
@@ -272,6 +300,10 @@ async function requestMarkets(): Promise<CryptoMarketData | null> {
           marketCapUsd: row.market_cap,
           volume24hUsd: row.total_volume,
           marketCapRank: row.market_cap_rank,
+          logoUrl: row.image,
+          // Thin the series: ~168 hourly points render as one or two
+          // pixels each at sparkline width, so most are wasted bytes.
+          sparkline7d: everyNth(row.sparkline_in_7d?.price ?? [], 4),
           quotedAt: row.last_updated,
         },
       ];
