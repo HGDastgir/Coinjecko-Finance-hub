@@ -1,64 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { Locale } from "@/i18n/config";
+import {
+  deltaClass,
+  formatChange,
+  formatUsd,
+  useCryptoMarkets,
+  type CryptoQuoteView,
+} from "@/components/markets/useCryptoMarkets";
 
 /**
- * Scrolling live crypto prices.
+ * Scrolling live crypto prices above the header.
  *
- * Talks only to our own /api/crypto-ticker, which proxies CoinGecko
- * server-side. If that route answers anything but 200 the bar renders
- * nothing at all: an empty strip is honest, a frozen price is not.
+ * Deliberately carries price and 24h change only — market cap and
+ * volume live in the table on /crypto, where they have column headers
+ * to explain them. A scrolling strip is the wrong place for a figure
+ * nobody can pause to read.
  *
- * Movement follows the project rule — never colour alone. The
- * .delta-up / .delta-down classes prepend ▲ / ▼ and the sign stays in
- * the text, so the direction survives without colour vision.
+ * Renders nothing when the provider is unavailable: an empty strip is
+ * honest, a frozen price is not.
  */
-
-interface TickerQuote {
-  slug: string;
-  symbol: string;
-  name: string;
-  priceUsd: number;
-  change24hPct: number | null;
-  quotedAt: string;
-}
-
-interface TickerPayload {
-  quotes: TickerQuote[];
-  source: string;
-  sourceUrl: string;
-  fetchedAt: string;
-}
-
-const REFRESH_MS = 60_000;
-
-function formatUsd(value: number): string {
-  const digits = value >= 1000 ? 0 : value >= 1 ? 2 : 4;
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: digits,
-    maximumFractionDigits: digits,
-  }).format(value);
-}
-
-function formatChange(pct: number): string {
-  if (pct === 0) return "0.00%";
-  return `${pct > 0 ? "+" : "−"}${Math.abs(pct).toFixed(2)}%`;
-}
-
-/**
- * Flat is its own state. Rendering an unchanged price as "▲ +0.00%"
- * would claim a rise that did not happen.
- */
-function deltaClass(pct: number): string {
-  if (pct > 0) return "delta-up";
-  if (pct < 0) return "delta-down";
-  return "text-ink-muted";
-}
-
 export function CryptoTicker({
   locale,
   labels,
@@ -66,39 +28,11 @@ export function CryptoTicker({
   locale: Locale;
   labels: { ariaLabel: string; attribution: string };
 }) {
-  const [data, setData] = useState<TickerPayload | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      try {
-        const response = await fetch("/api/crypto-ticker", {
-          cache: "no-store",
-        });
-        if (!response.ok) {
-          if (!cancelled) setData(null);
-          return;
-        }
-        const payload = (await response.json()) as TickerPayload;
-        if (!cancelled) setData(payload);
-      } catch {
-        // Offline or blocked — show nothing rather than a stale price.
-        if (!cancelled) setData(null);
-      }
-    }
-
-    void load();
-    const timer = setInterval(load, REFRESH_MS);
-    return () => {
-      cancelled = true;
-      clearInterval(timer);
-    };
-  }, []);
+  const data = useCryptoMarkets();
 
   if (!data || data.quotes.length === 0) return null;
 
-  const row = (quote: TickerQuote) => (
+  const row = (quote: CryptoQuoteView) => (
     <li key={quote.slug} className="shrink-0">
       <Link
         href={`/${locale}/crypto/${quote.slug}`}

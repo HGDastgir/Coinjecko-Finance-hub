@@ -195,5 +195,16 @@
   "ticker": {
     "ariaLabel": "Live cryptocurrency prices, updated every minute",
     "attribution": "Prices by CoinGecko"
+  },
+  "cryptoMarket": {
+    "heading": "Live crypto market data",
+    "asset": "Asset",
+    "price": "Price",
+    "change24h": "24h change",
+    "marketCap": "Market cap",
+    "volume24h": "24h volume",
+    "unavailable": "Live market data is temporarily unavailable. Nothing is shown rather than a stale price.",
+    "quotedAt": "quoted",
+    "attribution": "Data by CoinGecko"
   }
 }

@@ -6,6 +6,7 @@ import { buildPageMetadata } from "@/lib/seo/metadata";
 import { breadcrumbSchema, serializeJsonLd } from "@/lib/seo/json-ld";
 import { publicEnv } from "@/lib/env";
 import { CRYPTO_ASSETS } from "@/lib/markets/asset-data";
+import { CryptoMarketTable } from "@/components/markets/CryptoMarketTable";
 
 export async function generateMetadata({
   params,
@@ -52,9 +53,12 @@ export default async function CryptoPage({
       <p className="mt-3 max-w-2xl rounded-md border border-accent/40 bg-surface p-3 text-sm text-ink-muted">
         {a.cryptoRisk}
       </p>
-      <div className="mt-3 rounded-lg border border-dashed border-border bg-surface p-4 text-sm text-ink-muted">
-        {dict.data.notConnected}
-      </div>
+      <section aria-labelledby="market-heading" className="mt-6">
+        <h2 id="market-heading" className="text-xl font-semibold">
+          {dict.cryptoMarket.heading}
+        </h2>
+        <CryptoMarketTable locale={safeLocale} labels={dict.cryptoMarket} />
+      </section>
 
       <section aria-labelledby="coins-heading" className="mt-10">
         <h2 id="coins-heading" className="text-2xl font-semibold">
