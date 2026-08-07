@@ -1,5 +1,8 @@
+import Link from "next/link";
 import type { ExchangeStatus } from "@/lib/markets/exchange-status";
 import type { Dictionary } from "@/i18n/get-dictionary";
+import type { Locale } from "@/i18n/config";
+import { primaryIndexForExchange } from "@/lib/markets/reference-data";
 
 export function tradingWeekLabel(
   tradingDays: number[],
@@ -19,14 +22,24 @@ export function tradingWeekLabel(
 export function ExchangeStatusCard({
   status,
   dict,
+  locale,
 }: {
   status: ExchangeStatus;
   dict: Dictionary;
+  /** Omit to render a non-interactive card (e.g. the dashboard grid). */
+  locale?: Locale;
 }) {
   const { exchange, isOpen, localTime, sessionsLabel } = status;
   const m = dict.markets;
-  return (
-    <div className="rounded-lg border border-border bg-surface p-4">
+
+  // Exchanges have no page of their own, so the card points at the
+  // index that represents that market. Without one there is nowhere
+  // honest to send the reader, so the card stays static rather than
+  // looking clickable and doing nothing.
+  const index = locale ? primaryIndexForExchange(exchange.code) : null;
+
+  const body = (
+    <>
       <div className="flex items-start justify-between gap-2">
         <h3 className="font-latin text-sm font-semibold">
           {exchange.name}
@@ -63,6 +76,26 @@ export function ExchangeStatusCard({
           </dd>
         </div>
       </dl>
-    </div>
+    </>
+  );
+
+  if (!index) {
+    return (
+      <div className="rounded-lg border border-border bg-surface p-4">
+        {body}
+      </div>
+    );
+  }
+
+  return (
+    <Link
+      href={`/${locale}/markets/${index.slug}`}
+      className="block rounded-lg border border-border bg-surface p-4 transition-colors hover:border-brand"
+    >
+      {body}
+      <span className="mt-3 block text-xs font-medium text-brand">
+        {index.name} →
+      </span>
+    </Link>
   );
 }

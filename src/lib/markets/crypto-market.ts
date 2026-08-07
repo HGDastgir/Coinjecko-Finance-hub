@@ -2,7 +2,6 @@ import "server-only";
 import { z } from "zod";
 import { serverEnv } from "@/lib/env";
 import { logger } from "@/lib/logger";
-import { CRYPTO_ASSETS } from "@/lib/markets/asset-data";
 
 /**
  * Live crypto market data from CoinGecko — price, 24h change, market
@@ -252,13 +251,18 @@ function servableStale(now: number): CryptoMarketData | null {
   return cached.data;
 }
 
-async function requestMarkets(): Promise<CryptoMarketData | null> {
-  const ids = CRYPTO_ASSETS.map((asset) => COINGECKO_IDS[asset.slug]).filter(
-    Boolean,
-  );
-  if (ids.length === 0) return null;
+/**
+ * How many coins the market table carries. The top 250 by market cap
+ * is one upstream page and covers everything a reader is realistically
+ * looking for; paging further multiplies the upstream cost against a
+ * free-tier budget for a very long tail.
+ */
+const MARKET_PAGE_SIZE = 250;
 
-  const url = `${ENDPOINT}?vs_currency=usd&ids=${ids.join(",")}&order=market_cap_desc&price_change_percentage=24h&sparkline=true`;
+async function requestMarkets(): Promise<CryptoMarketData | null> {
+  const url =
+    `${ENDPOINT}?vs_currency=usd&order=market_cap_desc` +
+    `&per_page=${MARKET_PAGE_SIZE}&page=1&price_change_percentage=24h&sparkline=true`;
 
   // The free tier needs no key; a demo key raises the rate limit when
   // one is configured. Never exposed to the browser.
@@ -288,8 +292,11 @@ async function requestMarkets(): Promise<CryptoMarketData | null> {
     }
 
     const quotes: CryptoQuote[] = parsed.data.flatMap((row) => {
-      const slug = SLUG_BY_COINGECKO_ID.get(row.id);
-      if (!slug) return [];
+      // Curated coins keep the slug their editorial page already uses
+      // (our "xrp" vs CoinGecko's "ripple"); everything else is keyed
+      // by the provider id, which the coin page resolves on demand.
+      const slug = SLUG_BY_COINGECKO_ID.get(row.id) ?? row.id;
+      if (!/^[a-z0-9-]+$/.test(slug)) return [];
       return [
         {
           slug,

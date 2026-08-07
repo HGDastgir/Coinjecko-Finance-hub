@@ -96,6 +96,7 @@ export default async function MarketsPage({
                   key={status.exchange.code}
                   status={status}
                   dict={dict}
+                  locale={safeLocale}
                 />
               ))}
             </div>

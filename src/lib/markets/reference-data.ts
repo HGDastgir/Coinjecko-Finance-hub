@@ -351,3 +351,14 @@ export function getHubForIndex(index: IndexInfo): MarketHub | null {
     ) ?? null
   );
 }
+
+/**
+ * The index that best represents an exchange, used to give exchange
+ * cards somewhere to link. Exchanges have no page of their own — the
+ * index page is where a reader learns what that market is.
+ */
+export function primaryIndexForExchange(
+  exchangeCode: string,
+): IndexInfo | null {
+  return INDICES.find((i) => i.exchangeCode === exchangeCode) ?? null;
+}

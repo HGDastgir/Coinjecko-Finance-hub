@@ -132,7 +132,8 @@
     "unit": "Unit",
     "quotedIn": "Quoted in",
     "symbol": "Symbol",
-    "rateNote": "Daily reference rate — not a dealing rate. Banks and exchanges will differ."
+    "rateNote": "Daily reference rate — not a dealing rate. Banks and exchanges will differ.",
+    "noEditorialCoverage": "We have not published an editorial guide for this asset yet. The market data below comes from CoinGecko; the written context our covered assets carry is not available here."
   },
   "economy": {
     "title": "Economy & Economic Calendar",
