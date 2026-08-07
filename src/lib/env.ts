@@ -19,12 +19,19 @@ const publicSchema = z.object({
     .transform((u) => u.replace(/\/+$/, "")),
   NEXT_PUBLIC_SUPABASE_URL: z.string().url().optional(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1).optional(),
+  // AdSense publisher id (ca-pub-…). Public by design — it appears in
+  // the ad tag. Unset means ad slots render nothing at all.
+  NEXT_PUBLIC_ADSENSE_CLIENT: z
+    .string()
+    .regex(/^ca-pub-\d+$/)
+    .optional(),
 });
 
 export const publicEnv = publicSchema.parse({
   NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
   NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
   NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  NEXT_PUBLIC_ADSENSE_CLIENT: process.env.NEXT_PUBLIC_ADSENSE_CLIENT,
 });
 
 const serverSchema = z.object({

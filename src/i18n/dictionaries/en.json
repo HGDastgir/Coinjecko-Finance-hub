@@ -131,7 +131,8 @@
     "adviceAnswer": "No. CoinJecko / Finance Hub publishes market information and educational context only. Always conduct independent research and consult a qualified professional before making financial decisions.",
     "unit": "Unit",
     "quotedIn": "Quoted in",
-    "symbol": "Symbol"
+    "symbol": "Symbol",
+    "rateNote": "Daily reference rate — not a dealing rate. Banks and exchanges will differ."
   },
   "economy": {
     "title": "Economy & Economic Calendar",

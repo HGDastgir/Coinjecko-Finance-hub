@@ -6,11 +6,12 @@ import { buildPageMetadata } from "@/lib/seo/metadata";
 import { breadcrumbSchema, serializeJsonLd } from "@/lib/seo/json-ld";
 import { publicEnv } from "@/lib/env";
 import {
-  converterCurrencies,
+
   FOREX_PAIRS,
   type ForexPairInfo,
 } from "@/lib/markets/asset-data";
 import { CurrencyConverter } from "@/components/markets/CurrencyConverter";
+import { CONVERTER_CURRENCIES } from "@/lib/markets/fx-rates";
 
 export async function generateMetadata({
   params,
@@ -95,13 +96,14 @@ export default async function ForexPage({
         </h2>
         <p className="mt-1 mb-4 text-sm text-ink-muted">{a.converterLead}</p>
         <CurrencyConverter
-          currencies={converterCurrencies()}
+          currencies={CONVERTER_CURRENCIES}
           labels={{
             amount: a.amount,
             from: a.from,
             to: a.to,
             convert: a.convert,
             unavailable: a.converterUnavailable,
+            rateNote: a.rateNote,
           }}
         />
       </section>

@@ -4,21 +4,26 @@ import { useState } from "react";
 
 /**
  * Currency converter. Talks only to our server-side /api/rates proxy
- * (provider keys never reach the browser). While no licensed provider
- * is configured the API answers 503 and this component shows the
- * honest "not connected" state — it never estimates a rate.
+ * (provider keys never reach the browser). If the provider is
+ * unreachable the API answers 503 and this shows the honest "not
+ * connected" state — it never estimates a rate.
+ *
+ * The result carries the rate used and the provider's own update time,
+ * because the free feed refreshes daily: presenting a day-old rate as
+ * if it were live is exactly the kind of claim this project avoids.
  */
 export function CurrencyConverter({
   currencies,
   labels,
 }: {
-  currencies: string[];
+  currencies: readonly string[];
   labels: {
     amount: string;
     from: string;
     to: string;
     convert: string;
     unavailable: string;
+    rateNote: string;
   };
 }) {
   const [amount, setAmount] = useState("100");
@@ -29,7 +34,14 @@ export function CurrencyConverter({
     | { kind: "loading" }
     | { kind: "unavailable" }
     | { kind: "error" }
-    | { kind: "result"; text: string }
+    | {
+        kind: "result";
+        text: string;
+        rate: number;
+        asOf: string;
+        source: string;
+        pair: string;
+      }
   >({ kind: "idle" });
 
   async function convert(event: React.FormEvent) {
@@ -46,15 +58,29 @@ export function CurrencyConverter({
         setState({ kind: "error" });
         return;
       }
-      const data: { result?: number; rate?: number; asOf?: string } =
-        await res.json();
-      if (typeof data.result !== "number") {
+      const data: {
+        result?: number;
+        rate?: number;
+        asOf?: string;
+        source?: string;
+      } = await res.json();
+      if (typeof data.result !== "number" || typeof data.rate !== "number") {
         setState({ kind: "error" });
         return;
       }
+      const money = (value: number) =>
+        new Intl.NumberFormat("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: value < 1 ? 6 : 2,
+        }).format(value);
+
       setState({
         kind: "result",
-        text: `${amount} ${base} = ${data.result.toLocaleString()} ${quote}`,
+        text: `${money(Number(amount))} ${base} = ${money(data.result)} ${quote}`,
+        rate: data.rate,
+        asOf: data.asOf ?? "",
+        source: data.source ?? "",
+        pair: `1 ${base} = ${money(data.rate)} ${quote}`,
       });
     } catch {
       setState({ kind: "error" });
@@ -136,9 +162,21 @@ export function CurrencyConverter({
           </p>
         ) : null}
         {state.kind === "result" ? (
-          <p className="font-latin text-lg font-semibold tabular-nums">
-            {state.text}
-          </p>
+          <div>
+            <p className="font-latin text-lg font-semibold tabular-nums">
+              {state.text}
+            </p>
+            <p className="mt-1 font-latin text-xs text-ink-muted tabular-nums">
+              {state.pair}
+            </p>
+            {/* Provenance: whose rate, and how old. The free feed is
+                daily, so this caveat is not decoration. */}
+            <p className="mt-2 text-xs text-ink-muted">
+              {labels.rateNote}
+              {state.source ? ` — ${state.source}` : ""}
+              {state.asOf ? ` · ${state.asOf}` : ""}
+            </p>
+          </div>
         ) : null}
       </div>
     </form>
