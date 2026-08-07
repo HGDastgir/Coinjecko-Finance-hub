@@ -24,8 +24,19 @@ export interface CryptoQuoteView {
   quotedAt: string;
 }
 
+export interface GlobalStatsView {
+  totalMarketCapUsd: number;
+  totalVolume24hUsd: number;
+  marketCapChange24hPct: number | null;
+  btcDominancePct: number | null;
+  ethDominancePct: number | null;
+  activeCryptocurrencies: number | null;
+}
+
 export interface CryptoMarketPayload {
   quotes: CryptoQuoteView[];
+  /** Null when the aggregate endpoint failed but the coin list did not. */
+  global: GlobalStatsView | null;
   source: string;
   sourceUrl: string;
   fetchedAt: string;

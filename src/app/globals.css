@@ -10,19 +10,34 @@
    ============================================================ */
 
 :root {
-  --canvas: #f7f8f7;
+  --canvas: #f6f7fa;
   --surface: #ffffff;
-  --surface-raised: #eef1f0;
-  --ink: #17242b;
-  --ink-muted: #51636d;
-  --border: #d7dedd;
-  --brand: #0f766e;        /* jade */
-  --brand-strong: #0b5a54;
+  --surface-raised: #eef1f5;
+  --ink: #0c121a;
+  --ink-muted: #58646f;
+  --border: #d8dee7;
+  /* Gold is the identity. On white it must be darkened to stay
+     legible — #ecbe24 reads at 1.8:1 against #fff, nowhere near AA —
+     so light mode uses a deeper gold and keeps the bright one for
+     dark surfaces where it belongs. */
+  --brand: #8a6a00;
+  --brand-strong: #6d5400;
   --brand-contrast: #ffffff;
-  --accent: #b45309;       /* amber signal */
+  --accent: #b45309;
   --up: #15803d;
   --down: #b91c1c;
-  --focus: #b45309;
+  --focus: #8a6a00;
+
+  --radius: 0.625rem;
+  --gradient-hero: radial-gradient(
+      ellipse at top,
+      rgba(17, 58, 95, 0.10),
+      transparent 60%
+    ),
+    linear-gradient(180deg, #ffffff, #f6f7fa);
+  --gradient-gold: linear-gradient(135deg, #b58900, #8a6a00);
+  --shadow-card: 0 10px 30px -18px rgba(12, 18, 26, 0.35);
+  --shadow-glow: 0 0 60px -10px rgba(138, 106, 0, 0.25);
 
   /* Section spectrum — one hue per top-level section, used for
      wayfinding. Deliberately distinct from --up/--down, which carry
@@ -36,8 +51,8 @@
   --sect-business: #0f766e;
   --sect-personal: #a21caf;
 
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-urdu: "Noto Nastaliq Urdu", "Jameel Noori Nastaleeq",
     "Urdu Typesetting", "Nafees Nastaleeq", serif;
   --font-mono: ui-monospace, "Cascadia Code", "Segoe UI Mono", Menlo, monospace;
@@ -45,19 +60,29 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --canvas: #0d1518;
-    --surface: #131e22;
-    --surface-raised: #1b2930;
-    --ink: #e7edee;
-    --ink-muted: #9db0b7;
-    --border: #2a3b42;
-    --brand: #2dd4bf;
-    --brand-strong: #5eead4;
-    --brand-contrast: #06302c;
-    --accent: #fbbf24;
-    --up: #4ade80;
-    --down: #f87171;
-    --focus: #fbbf24;
+    --canvas: #080d16;
+    --surface: #0f1621;
+    --surface-raised: #171f2e;
+    --ink: #f3f5f8;
+    --ink-muted: #95a0ab;
+    --border: #252e3d;
+    --brand: #ecbe24;
+    --brand-strong: #faca4b;
+    --brand-contrast: #0c121a;
+    --accent: #f4a437;
+    --up: #37bb62;
+    --down: #ea3c3f;
+    --focus: #ecbe24;
+
+    --gradient-hero: radial-gradient(
+        ellipse at top,
+        rgba(17, 58, 95, 0.45),
+        transparent 60%
+      ),
+      linear-gradient(180deg, #0c121a, #03060b);
+    --gradient-gold: linear-gradient(135deg, #faca4b, #e29000);
+    --shadow-card: 0 10px 30px -15px rgba(0, 0, 0, 0.5);
+    --shadow-glow: 0 0 60px -10px rgba(236, 190, 36, 0.35);
 
     --sect-markets: #93c5fd;
     --sect-crypto: #c4b5fd;
@@ -70,19 +95,29 @@
 }
 
 :root[data-theme="dark"] {
-  --canvas: #0d1518;
-  --surface: #131e22;
-  --surface-raised: #1b2930;
-  --ink: #e7edee;
-  --ink-muted: #9db0b7;
-  --border: #2a3b42;
-  --brand: #2dd4bf;
-  --brand-strong: #5eead4;
-  --brand-contrast: #06302c;
-  --accent: #fbbf24;
-  --up: #4ade80;
-  --down: #f87171;
-  --focus: #fbbf24;
+  --canvas: #080d16;
+  --surface: #0f1621;
+  --surface-raised: #171f2e;
+  --ink: #f3f5f8;
+  --ink-muted: #95a0ab;
+  --border: #252e3d;
+  --brand: #ecbe24;
+  --brand-strong: #faca4b;
+  --brand-contrast: #0c121a;
+  --accent: #f4a437;
+  --up: #37bb62;
+  --down: #ea3c3f;
+  --focus: #ecbe24;
+
+  --gradient-hero: radial-gradient(
+      ellipse at top,
+      rgba(17, 58, 95, 0.45),
+      transparent 60%
+    ),
+    linear-gradient(180deg, #0c121a, #03060b);
+  --gradient-gold: linear-gradient(135deg, #faca4b, #e29000);
+  --shadow-card: 0 10px 30px -15px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 60px -10px rgba(236, 190, 36, 0.35);
 
   --sect-markets: #93c5fd;
   --sect-crypto: #c4b5fd;
@@ -193,6 +228,26 @@ html[dir="rtl"] .spectrum-bar {
     var(--sect-economy) 83%,
     var(--sect-personal) 100%
   );
+}
+
+/* Hero band: radial wash over a vertical fade, per the reference
+   design. Both stops come from tokens, so it follows the theme. */
+.bg-hero {
+  background: var(--gradient-hero);
+}
+
+.shadow-card {
+  box-shadow: var(--shadow-card);
+}
+
+/* Gold gradient for the wordmark and primary emphasis. Falls back to
+   a solid brand colour where background-clip:text is unsupported. */
+.text-gold-gradient {
+  color: var(--brand);
+  background: var(--gradient-gold);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 /* Crypto ticker marquee. Pauses on hover and on keyboard focus so the

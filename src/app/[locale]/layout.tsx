@@ -1,6 +1,18 @@
 import type { Metadata } from "next";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import { notFound } from "next/navigation";
 import "../globals.css";
+
+/**
+ * Self-hosted at build time by next/font, so it is served from our own
+ * origin — `font-src 'self'` in the CSP stays untouched and no
+ * third-party font host has to be allow-listed.
+ */
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-jakarta",
+});
 import {
   isLocale,
   localeDirection,
@@ -51,7 +63,11 @@ export default async function LocaleLayout({
   const dict = await getDictionary(locale);
 
   return (
-    <html lang={locale} dir={localeDirection[locale]} className="h-full">
+    <html
+      lang={locale}
+      dir={localeDirection[locale]}
+      className={`h-full ${jakarta.variable}`}
+    >
       <body className="flex min-h-full flex-col antialiased">
         <a href="#main-content" className="skip-link font-latin">
           {dict.a11y.skipToContent}

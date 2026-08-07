@@ -206,5 +206,12 @@
     "unavailable": "Live market data is temporarily unavailable. Nothing is shown rather than a stale price.",
     "quotedAt": "quoted",
     "attribution": "Data by CoinGecko"
+  },
+  "globalStats": {
+    "heading": "Global crypto market statistics",
+    "totalMarketCap": "Total market cap",
+    "volume24h": "24h volume",
+    "btcDominance": "BTC dominance",
+    "ethDominance": "ETH dominance"
   }
 }

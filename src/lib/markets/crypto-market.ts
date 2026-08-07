@@ -47,6 +47,28 @@ const COINGECKO_IDS: Record<string, string> = {
 };
 
 const ENDPOINT = "https://api.coingecko.com/api/v3/coins/markets";
+const GLOBAL_ENDPOINT = "https://api.coingecko.com/api/v3/global";
+
+const globalSchema = z.object({
+  data: z.object({
+    total_market_cap: z.object({ usd: z.number().finite().nonnegative() }),
+    total_volume: z.object({ usd: z.number().finite().nonnegative() }),
+    market_cap_percentage: z.record(z.string(), z.number().finite()),
+    market_cap_change_percentage_24h_usd: z.number().finite().nullable(),
+    active_cryptocurrencies: z.number().int().nonnegative().nullable(),
+  }),
+});
+
+export interface GlobalCryptoStats {
+  totalMarketCapUsd: number;
+  totalVolume24hUsd: number;
+  marketCapChange24hPct: number | null;
+  btcDominancePct: number | null;
+  ethDominancePct: number | null;
+  activeCryptocurrencies: number | null;
+  source: "CoinGecko";
+  fetchedAt: string;
+}
 
 /** Upstream is untrusted input; only the fields we render are accepted. */
 const marketRowSchema = z.object({
@@ -120,6 +142,80 @@ export async function fetchCryptoMarkets(): Promise<CryptoMarketData | null> {
     return fresh;
   }
   return servableStale(Date.now());
+}
+
+let cachedGlobal: { data: GlobalCryptoStats; at: number } | null = null;
+let globalInFlight: Promise<GlobalCryptoStats | null> | null = null;
+
+/**
+ * Aggregate market stats. Same cache-and-share discipline as the coin
+ * list — this is a second upstream endpoint, so without it the free
+ * tier's budget is spent twice as fast.
+ */
+export async function fetchGlobalCryptoStats(): Promise<GlobalCryptoStats | null> {
+  const now = Date.now();
+  if (cachedGlobal && now - cachedGlobal.at < REFRESH_MS) return cachedGlobal.data;
+  if (now < cooldownUntil) return servableStaleGlobal(now);
+
+  globalInFlight ??= requestGlobal().finally(() => {
+    globalInFlight = null;
+  });
+
+  const fresh = await globalInFlight;
+  if (fresh) {
+    cachedGlobal = { data: fresh, at: Date.now() };
+    return fresh;
+  }
+  return servableStaleGlobal(Date.now());
+}
+
+async function requestGlobal(): Promise<GlobalCryptoStats | null> {
+  const apiKey = serverEnv().CRYPTO_DATA_API_KEY;
+  const headers: Record<string, string> = { accept: "application/json" };
+  if (apiKey) headers["x-cg-demo-api-key"] = apiKey;
+
+  try {
+    const response = await fetch(GLOBAL_ENDPOINT, {
+      headers,
+      signal: AbortSignal.timeout(8000),
+      next: { revalidate: 60 },
+    });
+
+    if (!response.ok) {
+      logger.warn("crypto_global.upstream_error", { status: response.status });
+      if (response.status === 429) cooldownUntil = Date.now() + COOLDOWN_MS;
+      return null;
+    }
+
+    const parsed = globalSchema.safeParse(await response.json());
+    if (!parsed.success) {
+      logger.warn("crypto_global.unexpected_shape");
+      return null;
+    }
+
+    const d = parsed.data.data;
+    return {
+      totalMarketCapUsd: d.total_market_cap.usd,
+      totalVolume24hUsd: d.total_volume.usd,
+      marketCapChange24hPct: d.market_cap_change_percentage_24h_usd,
+      btcDominancePct: d.market_cap_percentage.btc ?? null,
+      ethDominancePct: d.market_cap_percentage.eth ?? null,
+      activeCryptocurrencies: d.active_cryptocurrencies,
+      source: "CoinGecko",
+      fetchedAt: new Date().toISOString(),
+    };
+  } catch (err) {
+    logger.warn("crypto_global.fetch_failed", {
+      reason: err instanceof Error ? err.message : "unknown",
+    });
+    return null;
+  }
+}
+
+function servableStaleGlobal(now: number): GlobalCryptoStats | null {
+  if (!cachedGlobal) return null;
+  if (now - cachedGlobal.at > REFRESH_MS + STALE_GRACE_MS) return null;
+  return cachedGlobal.data;
 }
 
 function servableStale(now: number): CryptoMarketData | null {

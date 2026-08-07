@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
-import { fetchCryptoMarkets } from "@/lib/markets/crypto-market";
+import {
+  fetchCryptoMarkets,
+  fetchGlobalCryptoStats,
+} from "@/lib/markets/crypto-market";
 
 /**
  * Live crypto market data — price, 24h change, market cap and volume.
@@ -17,7 +20,12 @@ import { fetchCryptoMarkets } from "@/lib/markets/crypto-market";
 export const revalidate = 60;
 
 export async function GET() {
-  const data = await fetchCryptoMarkets();
+  // One endpoint for both so the client polls once. Aggregate stats
+  // are optional: the coin list is what the page cannot do without.
+  const [data, global] = await Promise.all([
+    fetchCryptoMarkets(),
+    fetchGlobalCryptoStats(),
+  ]);
 
   if (!data) {
     return NextResponse.json(
@@ -26,7 +34,7 @@ export async function GET() {
     );
   }
 
-  return NextResponse.json(data, {
+  return NextResponse.json({ ...data, global }, {
     headers: {
       // Short shared cache; the upstream fetch is itself revalidated
       // every 60s, so one CoinGecko call serves every visitor.

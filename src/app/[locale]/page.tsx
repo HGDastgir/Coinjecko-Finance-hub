@@ -3,6 +3,7 @@ import Link from "next/link";
 import { isLocale, defaultLocale, type Locale } from "@/i18n/config";
 import { getDictionary, type Dictionary } from "@/i18n/get-dictionary";
 import { getFeaturedExchangeStatuses } from "@/lib/markets/exchange-status";
+import { GlobalCryptoStats } from "@/components/markets/GlobalCryptoStats";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 
 /** Recompute exchange session status every 5 minutes. */
@@ -44,16 +45,27 @@ export default async function HomePage({
   const statuses = getFeaturedExchangeStatuses();
 
   return (
-    <div className="mx-auto max-w-6xl px-4">
-      {/* Hero */}
-      <section className="py-12 sm:py-16">
-        <h1 className="max-w-3xl text-3xl font-bold leading-snug sm:text-5xl sm:leading-tight">
-          {dict.home.heroTitle}
-        </h1>
-        <p className="mt-4 max-w-2xl text-lg leading-relaxed text-ink-muted">
-          {dict.home.heroLead}
-        </p>
+    <div>
+      {/* Hero band — full-bleed gradient, centred, with the live
+          global market stats sitting directly underneath it. */}
+      <section className="bg-hero border-b border-border">
+        <div className="mx-auto max-w-6xl px-4 py-16 sm:py-24">
+          <p className="mx-auto w-fit rounded-full border border-border bg-surface/60 px-3 py-1 text-xs font-medium text-ink-muted">
+            {dict.site.shortName} — English &amp; اردو
+          </p>
+          <h1 className="mx-auto mt-6 max-w-3xl text-center text-4xl font-bold leading-tight sm:text-6xl sm:leading-tight">
+            {dict.home.heroTitle}
+          </h1>
+          <p className="mx-auto mt-5 max-w-2xl text-center text-lg leading-relaxed text-ink-muted">
+            {dict.home.heroLead}
+          </p>
+          <div className="mt-10">
+            <GlobalCryptoStats labels={dict.globalStats} />
+          </div>
+        </div>
       </section>
+
+      <div className="mx-auto max-w-6xl px-4">
 
       {/* World exchange status */}
       <section aria-labelledby="exchange-status-heading" className="py-8">
@@ -138,6 +150,7 @@ export default async function HomePage({
         </p>
         <p className="mt-4 text-xs text-ink-muted">{dict.data.notAdvice}</p>
       </section>
+      </div>
     </div>
   );
 }
