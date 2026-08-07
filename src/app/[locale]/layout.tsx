@@ -8,6 +8,7 @@ import {
   type Locale,
 } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
+import { CryptoTicker } from "@/components/markets/CryptoTicker";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { buildPageMetadata } from "@/lib/seo/metadata";
@@ -55,6 +56,7 @@ export default async function LocaleLayout({
         <a href="#main-content" className="skip-link font-latin">
           {dict.a11y.skipToContent}
         </a>
+        <CryptoTicker locale={locale} labels={dict.ticker} />
         <Header locale={locale} dict={dict} />
         <main id="main-content" className="flex-1">
           {children}

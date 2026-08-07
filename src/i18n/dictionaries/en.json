@@ -191,5 +191,9 @@
   "legalNotice": {
     "draft": "This document is a working draft. Obtain professional legal review for every jurisdiction you serve before commercial launch.",
     "urduPending": ""
+  },
+  "ticker": {
+    "ariaLabel": "Live cryptocurrency prices, updated every minute",
+    "attribution": "Prices by CoinGecko"
   }
 }

@@ -195,6 +195,59 @@ html[dir="rtl"] .spectrum-bar {
   );
 }
 
+/* Crypto ticker marquee. Pauses on hover and on keyboard focus so the
+   prices can actually be read and the links can be tabbed to. */
+.ticker {
+  overflow: hidden;
+}
+
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ticker-scroll 60s linear infinite;
+}
+
+.ticker-group {
+  display: flex;
+}
+
+.ticker:hover .ticker-track,
+.ticker:focus-within .ticker-track {
+  animation-play-state: paused;
+}
+
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Under RTL the strip travels the other way, with the reading order. */
+html[dir="rtl"] .ticker-track {
+  animation-name: ticker-scroll-rtl;
+}
+
+@keyframes ticker-scroll-rtl {
+  from { transform: translateX(0); }
+  to { transform: translateX(50%); }
+}
+
+/* The global reduced-motion rule collapses animation-duration to
+   0.01ms, which would snap the strip to its end position instead of
+   stopping it. Stop it properly, drop the duplicate copy, and let the
+   reader scroll the row by hand. */
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track {
+    animation: none !important;
+    transform: none !important;
+  }
+  .ticker {
+    overflow-x: auto;
+  }
+  .ticker-group[data-copy="1"] {
+    display: none;
+  }
+}
+
 /* Market movement: colour + symbol + text, never colour alone. */
 .delta-up { color: var(--up); }
 .delta-down { color: var(--down); }
