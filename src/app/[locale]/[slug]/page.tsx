@@ -67,9 +67,13 @@ export default async function LegalPageRoute({
       />
       <h1 className="text-3xl font-bold">{title}</h1>
 
-      <p className="mt-4 rounded-md border border-accent/40 bg-surface p-3 text-sm text-ink-muted">
-        {dict.legalNotice.draft}
-      </p>
+      {/* The pending-legal-review notice belongs on policy documents,
+          not on editorial pages like About or Advertise. */}
+      {page.isLegalDocument === false ? null : (
+        <p className="mt-4 rounded-md border border-accent/40 bg-surface p-3 text-sm text-ink-muted">
+          {dict.legalNotice.draft}
+        </p>
+      )}
       {locale === "ur" && dict.legalNotice.urduPending ? (
         <p className="mt-2 rounded-md border border-border bg-surface p-3 text-sm text-ink-muted">
           {dict.legalNotice.urduPending}

@@ -18,6 +18,12 @@ export interface LegalPage {
   titleUr: string;
   description: string;
   sections: LegalSection[];
+  /**
+   * False for editorial pages (About, Advertise) that share this
+   * route but are not policy documents, so they do not carry the
+   * pending-legal-review notice.
+   */
+  isLegalDocument?: boolean;
 }
 
 export const LEGAL_PAGES: Record<string, LegalPage> = {
@@ -273,6 +279,81 @@ export const LEGAL_PAGES: Record<string, LegalPage> = {
         heading: "Contact",
         paragraphs: [
           "A dedicated contact address will be published here before launch.",
+        ],
+      },
+    ],
+  },
+
+  about: {
+    slug: "about",
+    titleEn: "About CoinJecko Finance Hub",
+    titleUr: "کوئن جیکو فنانس ہب کے بارے میں",
+    isLegalDocument: false,
+    description:
+      "Our mission: markets, money and crypto explained without the noise, in English and Urdu, for readers in Pakistan, South Asia, the Gulf and beyond.",
+    sections: [
+      {
+        heading: "Our mission",
+        paragraphs: [
+          "CoinJecko Finance Hub exists to explain markets, money and crypto without the noise. Financial coverage in our regions too often arrives as either untranslated jargon or breathless hype, and neither helps somebody decide what to do with their savings. We publish market data with its source attached and context written in plain language, in English and Urdu.",
+          "We serve readers whose financial lives cross borders: households in Pakistan and India tracking the rupee, workers in the Gulf sending money home, and diaspora readers in the UK and Canada following markets in two places at once. That audience is our editorial centre of gravity, not an afterthought.",
+        ],
+      },
+      {
+        heading: "How we handle data",
+        paragraphs: [
+          "Every price, rate and market figure on this site comes from a named provider and carries that provider's own timestamp. When a data source is unavailable, we show nothing and say so — we do not display an estimated, cached or invented number to fill a gap. Where a figure is derived rather than quoted, such as trading-session status calculated from published exchange hours, we label it as derived and state its limits.",
+          "This is a deliberate constraint and it occasionally makes the site look emptier than competitors. We think a blank space you can trust is worth more than a number you cannot.",
+        ],
+      },
+      {
+        heading: "Bilingual by design",
+        paragraphs: [
+          "English and Urdu are both first-class. Urdu is written right-to-left throughout, not bolted on as a translation layer, and financial terminology is reviewed by a human before publication. Machine-assisted translations are flagged in our system and are not published as reviewed copy.",
+        ],
+      },
+      {
+        heading: "Independence and disclosure",
+        paragraphs: [
+          "Advertising and sponsored content are always labelled as such and never influence editorial judgement. Our Editorial Policy sets out how stories are selected and verified; our Corrections Policy sets out how we fix mistakes; our Advertising Disclosure sets out the commercial boundaries.",
+          "This website provides educational and informational content only, not financial advice.",
+        ],
+      },
+    ],
+  },
+
+  advertise: {
+    slug: "advertise",
+    titleEn: "Advertise with us",
+    titleUr: "ہمارے ساتھ اشتہار دیں",
+    isLegalDocument: false,
+    description:
+      "Reach an engaged bilingual finance audience across Pakistan, South Asia, the Gulf, the UK and Canada.",
+    sections: [
+      {
+        heading: "Who you reach",
+        paragraphs: [
+          "Our readers follow markets in more than one country at once: Pakistani and South Asian households tracking currency and equity markets, Gulf-based professionals managing remittances and savings, and diaspora readers in the UK and Canada. They arrive predominantly on mobile, and they come for data rather than entertainment.",
+          "We publish audience figures only once they are independently measurable. Until this site has a verified analytics history, we will not quote traffic numbers — ask us and we will share exactly what we can evidence at that point.",
+        ],
+      },
+      {
+        heading: "What we offer",
+        paragraphs: [
+          "Display placements in defined slots across market and editorial pages, newsletter placements in our morning brief, and clearly labelled sponsored articles produced to our editorial standards.",
+        ],
+      },
+      {
+        heading: "Our advertising rules",
+        paragraphs: [
+          "Sponsored content is always labelled as sponsored and always carries a named sponsor — our publishing system refuses to publish it otherwise. Advertisers never receive influence over editorial coverage, advance sight of unrelated stories, or the ability to have factual reporting altered or removed.",
+          "We decline advertising for guaranteed-return schemes, unlicensed investment products, and any offer whose primary claim we cannot verify. On a finance site aimed partly at first-time investors, this matters more than the revenue.",
+        ],
+      },
+      {
+        heading: "Get in touch",
+        paragraphs: [
+          "Use the contact page to reach the advertising team. Tell us your campaign goals, target regions and timing, and we will reply with available placements and rates.",
         ],
       },
     ],

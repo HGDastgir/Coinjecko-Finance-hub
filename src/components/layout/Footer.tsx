@@ -3,6 +3,9 @@ import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/get-dictionary";
 
 const TRUST_LINKS: { key: keyof Dictionary["footer"]; path: string }[] = [
+  { key: "about", path: "/about" },
+  { key: "contact", path: "/contact" },
+  { key: "advertise", path: "/advertise" },
   { key: "editorialPolicy", path: "/editorial-policy" },
   { key: "correctionsPolicy", path: "/corrections-policy" },
   { key: "advertisingDisclosure", path: "/advertising-disclosure" },

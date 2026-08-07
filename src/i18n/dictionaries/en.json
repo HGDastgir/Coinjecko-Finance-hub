@@ -16,7 +16,9 @@
     "worldMarketMap": "World Market Map",
     "menu": "Menu",
     "closeMenu": "Close menu",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "about": "About",
+    "contact": "Contact"
   },
   "a11y": {
     "skipToContent": "Skip to main content",
@@ -168,7 +170,7 @@
     "notAdvice": "Market data is provided for information only and is not financial advice."
   },
   "footer": {
-    "about": "About",
+    "about": "About us",
     "trust": "Trust & Policies",
     "legal": "Legal",
     "languages": "Languages",
@@ -180,7 +182,9 @@
     "advertisingDisclosure": "Advertising Disclosure",
     "financialDisclaimer": "Financial Disclaimer",
     "dataRequest": "Data Request Contact",
-    "rightsReserved": "All rights reserved."
+    "rightsReserved": "All rights reserved.",
+    "contact": "Contact us",
+    "advertise": "Advertise with us"
   },
   "disclaimer": {
     "short": "CoinJecko / Finance Hub provides financial news, market data, educational material and analysis for informational purposes only. Market data may be delayed, incomplete or supplied by third-party providers. Nothing published on this platform constitutes personal financial, investment, tax or legal advice. Always conduct independent research and consult an appropriately qualified professional before making financial decisions."
@@ -233,5 +237,30 @@
     "marketTitle": "Coin market",
     "sessionsTitle": "Exchange sessions",
     "updated": "Auto-refreshes every minute"
+  },
+  "contact": {
+    "title": "Contact us",
+    "lead": "Questions, corrections, advertising enquiries or data requests — reach us here.",
+    "channelsTitle": "Direct channels",
+    "socialTitle": "Follow us",
+    "formTitle": "Send a message",
+    "noChannels": "Direct contact channels are being set up. Use the form below and we will reply by email.",
+    "disclaimer": "This website provides educational and informational content only, not financial advice.",
+    "form": {
+      "topic": "What is this about?",
+      "topicGeneral": "General enquiry",
+      "topicAdvertising": "Advertising",
+      "topicCorrection": "Correction request",
+      "topicDataRequest": "Data request",
+      "name": "Your name",
+      "email": "Your email",
+      "message": "Message",
+      "send": "Send message",
+      "sending": "Sending…",
+      "sent": "Thank you — your message has been received. We reply by email, usually within two business days.",
+      "error": "Please check the form and try again.",
+      "throttled": "Too many messages sent from here. Please try again later.",
+      "unavailable": "Messages cannot be submitted right now because our backend is not connected. Please email us directly using the address above."
+    }
   }
 }
