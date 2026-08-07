@@ -21,6 +21,18 @@ import {
  * Renders nothing when the provider is unavailable: an empty strip is
  * honest, a frozen price is not.
  */
+/**
+ * The strip carries the largest coins only. It is a glance surface,
+ * not the market table: pushing all 250 through it made the loop
+ * unreadably fast, because the same animation had to traverse 35x the
+ * content in the same time.
+ */
+const TICKER_COINS = 12;
+
+/** Seconds per coin, so adding coins slows the strip instead of
+ *  speeding it up. Tuned so a coin stays legible as it passes. */
+const SECONDS_PER_COIN = 7;
+
 export function CryptoTicker({
   locale,
   labels,
@@ -31,6 +43,9 @@ export function CryptoTicker({
   const data = useCryptoMarkets();
 
   if (!data || data.quotes.length === 0) return null;
+
+  const quotes = data.quotes.slice(0, TICKER_COINS);
+  const durationSeconds = quotes.length * SECONDS_PER_COIN;
 
   const row = (quote: CryptoQuoteView) => (
     <li key={quote.slug} className="shrink-0">
@@ -57,12 +72,15 @@ export function CryptoTicker({
     <div className="border-b border-border bg-surface-raised">
       <div className="mx-auto flex max-w-6xl items-center gap-2 px-4">
         <div className="ticker flex-1" aria-label={labels.ariaLabel}>
-          <div className="ticker-track">
-            <ul className="ticker-group">{data.quotes.map(row)}</ul>
+          <div
+            className="ticker-track"
+            style={{ animationDuration: `${durationSeconds}s` }}
+          >
+            <ul className="ticker-group">{quotes.map(row)}</ul>
             {/* Second copy makes the loop seamless; hidden from
                 assistive tech so prices are not announced twice. */}
             <ul className="ticker-group" aria-hidden="true" data-copy="1">
-              {data.quotes.map(row)}
+              {quotes.map(row)}
             </ul>
           </div>
         </div>
