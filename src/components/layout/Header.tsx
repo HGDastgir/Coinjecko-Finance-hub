@@ -4,14 +4,61 @@ import type { Dictionary } from "@/i18n/get-dictionary";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 import { ThemeToggle } from "./ThemeToggle";
 
-const NAV_ITEMS: { key: keyof Dictionary["nav"]; path: string }[] = [
-  { key: "markets", path: "/markets" },
-  { key: "crypto", path: "/crypto" },
-  { key: "forex", path: "/forex" },
-  { key: "commodities", path: "/commodities" },
-  { key: "economy", path: "/economy" },
-  { key: "business", path: "/business" },
-  { key: "personalFinance", path: "/personal-finance" },
+/**
+ * Each section carries its own hue from the spectrum in globals.css.
+ * The colour is wayfinding, never the only signal — it sits beside the
+ * section's own label, and the dot is decorative. Classes are written
+ * out rather than built from the key because Tailwind only sees class
+ * names that appear literally in the source.
+ */
+const NAV_ITEMS: {
+  key: keyof Dictionary["nav"];
+  path: string;
+  dot: string;
+  hover: string;
+}[] = [
+  {
+    key: "markets",
+    path: "/markets",
+    dot: "bg-sect-markets",
+    hover: "hover:text-sect-markets",
+  },
+  {
+    key: "crypto",
+    path: "/crypto",
+    dot: "bg-sect-crypto",
+    hover: "hover:text-sect-crypto",
+  },
+  {
+    key: "forex",
+    path: "/forex",
+    dot: "bg-sect-forex",
+    hover: "hover:text-sect-forex",
+  },
+  {
+    key: "commodities",
+    path: "/commodities",
+    dot: "bg-sect-commodities",
+    hover: "hover:text-sect-commodities",
+  },
+  {
+    key: "economy",
+    path: "/economy",
+    dot: "bg-sect-economy",
+    hover: "hover:text-sect-economy",
+  },
+  {
+    key: "business",
+    path: "/business",
+    dot: "bg-sect-business",
+    hover: "hover:text-sect-business",
+  },
+  {
+    key: "personalFinance",
+    path: "/personal-finance",
+    dot: "bg-sect-personal",
+    hover: "hover:text-sect-personal",
+  },
 ];
 
 export function Header({
@@ -40,14 +87,19 @@ export function Header({
         />
         <ThemeToggle label={dict.a11y.toggleTheme} />
       </div>
-      <nav aria-label={dict.a11y.mainNavigation} className="border-t border-border">
+      <div className="spectrum-bar" aria-hidden="true" />
+      <nav aria-label={dict.a11y.mainNavigation}>
         <ul className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 py-1">
-          {NAV_ITEMS.map(({ key, path }) => (
+          {NAV_ITEMS.map(({ key, path, dot, hover }) => (
             <li key={key} className="shrink-0">
               <Link
                 href={`/${locale}${path}`}
-                className="block rounded-md px-3 py-2 text-sm text-ink hover:bg-surface-raised hover:text-brand"
+                className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm text-ink hover:bg-surface-raised ${hover}`}
               >
+                <span
+                  aria-hidden="true"
+                  className={`size-2 shrink-0 rounded-full ${dot}`}
+                />
                 {dict.nav[key]}
               </Link>
             </li>

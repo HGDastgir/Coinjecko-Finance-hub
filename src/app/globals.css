@@ -24,6 +24,18 @@
   --down: #b91c1c;
   --focus: #b45309;
 
+  /* Section spectrum — one hue per top-level section, used for
+     wayfinding. Deliberately distinct from --up/--down, which carry
+     market meaning and must never be spent on decoration. Every value
+     clears 4.5:1 on --surface, so it is safe for text, not just fills. */
+  --sect-markets: #1d4ed8;
+  --sect-crypto: #6d28d9;
+  --sect-forex: #0e7490;
+  --sect-commodities: #c2410c;
+  --sect-economy: #be123c;
+  --sect-business: #0f766e;
+  --sect-personal: #a21caf;
+
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
   --font-urdu: "Noto Nastaliq Urdu", "Jameel Noori Nastaleeq",
@@ -46,6 +58,14 @@
     --up: #4ade80;
     --down: #f87171;
     --focus: #fbbf24;
+
+    --sect-markets: #93c5fd;
+    --sect-crypto: #c4b5fd;
+    --sect-forex: #67e8f9;
+    --sect-commodities: #fdba74;
+    --sect-economy: #fda4af;
+    --sect-business: #5eead4;
+    --sect-personal: #f0abfc;
   }
 }
 
@@ -63,6 +83,14 @@
   --up: #4ade80;
   --down: #f87171;
   --focus: #fbbf24;
+
+  --sect-markets: #93c5fd;
+  --sect-crypto: #c4b5fd;
+  --sect-forex: #67e8f9;
+  --sect-commodities: #fdba74;
+  --sect-economy: #fda4af;
+  --sect-business: #5eead4;
+  --sect-personal: #f0abfc;
 }
 
 @theme inline {
@@ -78,6 +106,13 @@
   --color-accent: var(--accent);
   --color-up: var(--up);
   --color-down: var(--down);
+  --color-sect-markets: var(--sect-markets);
+  --color-sect-crypto: var(--sect-crypto);
+  --color-sect-forex: var(--sect-forex);
+  --color-sect-commodities: var(--sect-commodities);
+  --color-sect-economy: var(--sect-economy);
+  --color-sect-business: var(--sect-business);
+  --color-sect-personal: var(--sect-personal);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
 }
@@ -127,6 +162,37 @@ html[lang="ur"] .font-latin {
 }
 .skip-link:focus {
   top: 0.75rem;
+}
+
+/* Section spectrum strip. Purely decorative, so it is hidden from
+   assistive tech at the call site; the nav beneath it carries the same
+   colours next to readable labels. Reversed under RTL so the hue order
+   still runs with the reading direction. */
+.spectrum-bar {
+  height: 3px;
+  background: linear-gradient(
+    to right,
+    var(--sect-markets) 0%,
+    var(--sect-crypto) 17%,
+    var(--sect-forex) 33%,
+    var(--sect-business) 50%,
+    var(--sect-commodities) 67%,
+    var(--sect-economy) 83%,
+    var(--sect-personal) 100%
+  );
+}
+
+html[dir="rtl"] .spectrum-bar {
+  background: linear-gradient(
+    to left,
+    var(--sect-markets) 0%,
+    var(--sect-crypto) 17%,
+    var(--sect-forex) 33%,
+    var(--sect-business) 50%,
+    var(--sect-commodities) 67%,
+    var(--sect-economy) 83%,
+    var(--sect-personal) 100%
+  );
 }
 
 /* Market movement: colour + symbol + text, never colour alone. */
