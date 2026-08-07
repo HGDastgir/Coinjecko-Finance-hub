@@ -5,6 +5,7 @@ import {
   generateNonce,
   securityHeaders,
 } from "@/lib/security/headers";
+import { clientIpFromHeaders } from "@/lib/security/client-ip";
 import { rateLimit, RATE_LIMITS } from "@/lib/rate-limit";
 import { defaultLocale, isLocale, negotiateLocale } from "@/i18n/config";
 import { publicEnv } from "@/lib/env";
@@ -24,10 +25,9 @@ const isDev = process.env.NODE_ENV !== "production";
 const PUBLIC_FILE = /\.[^/]+$/;
 
 function clientIp(request: NextRequest): string {
-  // Behind the CDN, the platform sets x-forwarded-for; leftmost entry
-  // is the client. Never trust it for auth — used for rate keys only.
-  const fwd = request.headers.get("x-forwarded-for");
-  return fwd?.split(",")[0]?.trim() || "unknown";
+  // Never an auth signal — a rate-limit grouping key only. See
+  // src/lib/security/client-ip.ts for why this reads from the right.
+  return clientIpFromHeaders((name) => request.headers.get(name));
 }
 
 function buildCsp(nonce: string, mode: "strict-nonce" | "static-site") {

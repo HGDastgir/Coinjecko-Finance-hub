@@ -55,7 +55,7 @@ npm test        # node:test — no test framework dependency
 - Authorisation is enforced by PostgreSQL RLS policies driven by a role → permission matrix; the TypeScript mirror is defence-in-depth, not the boundary.
 - `audit_log` and `login_events` are append-only at the database level (triggers + revoked grants).
 - Editorial status transitions are enforced by a database trigger (`enforce_editorial_workflow`), not just by the UI: reaching or leaving `published` requires `content.publish` and approving requires `content.review`, so an author cannot publish their own draft.
-- Rate limiting: in-memory backstop today; production abuse protection is expected from CDN/WAF plus a durable store.
+- Rate limiting: in-memory backstop today; production abuse protection is expected from CDN/WAF plus a durable store. Limiter keys resolve the client address from edge-set headers, falling back to the *rightmost* `X-Forwarded-For` entry — the leftmost is caller-controlled and keying on it would let one client mint a fresh bucket per request. Currently only `/api/*` is limited: `RATE_LIMITS.auth` and `RATE_LIMITS.newsletter` are defined but not yet wired to a call site, so authentication attempts are limited by Supabase alone.
 - Security is continuously tested and maintained — the existence of these controls is not a claim of certification, and no compliance certification is claimed without an independent audit.
 
 ## Editorial trust
