@@ -15,9 +15,10 @@ npm run dev      # dev server (localhost:3000)
 npm run build    # production build (also type-checks; must pass before committing)
 npm run start    # serve the production build
 npm run lint     # eslint
+npm test         # node:test suite (no test framework dependency)
 ```
 
-No test runner is configured yet. Node 24+ required. Copy `.env.example` to `.env.local` for real config — never commit secrets; only `.env.example` is tracked.
+Tests run on Node's built-in runner with native TypeScript stripping — there is deliberately no test-framework dependency. `tests/alias-hooks.mjs` resolves the `@/*` alias; `tests/package.json` scopes ESM to that directory. Only dependency-free modules are covered (workflow rules, the permission matrix, dictionary parity, JSON-LD escaping); anything needing a request context or a live database is not, so `npm test` passing does not mean the Supabase-backed paths were exercised. Node 24+ required. Copy `.env.example` to `.env.local` for real config — never commit secrets; only `.env.example` is tracked.
 
 ## Architecture — the big picture
 

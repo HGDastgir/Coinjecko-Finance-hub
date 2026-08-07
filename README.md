@@ -43,7 +43,10 @@ The app runs without any credentials (auth/admin surfaces fail closed). To enabl
 npm run build   # production build + type-check
 npm run start   # serve production build
 npm run lint
+npm test        # node:test — no test framework dependency
 ```
+
+`npm test` covers the rules that must not drift: the editorial workflow (including a check that migration 0004 and its TypeScript mirror still agree), the role/permission matrix, EN/UR dictionary parity, and JSON-LD escaping. It deliberately does not touch anything requiring a request context or a live database, so a green run says nothing about the Supabase-backed paths.
 
 ## Security model (summary)
 

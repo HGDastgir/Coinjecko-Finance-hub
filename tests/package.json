@@ -1,0 +1,4 @@
+{
+  "//": "Scopes ES module semantics to tests/ only, so Node stops re-parsing each test file. Kept out of the root package.json to avoid changing how Next.js treats the app's own files.",
+  "type": "module"
+}
