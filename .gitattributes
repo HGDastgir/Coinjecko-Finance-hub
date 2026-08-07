@@ -1,0 +1,18 @@
+# Normalise line endings so a Windows checkout, WSL, macOS and CI all
+# agree. Without this, core.autocrlf turns routine edits into whole-file
+# diffs the moment the repo is touched from another platform.
+* text=auto eol=lf
+
+# Binary assets git must never translate.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.webp binary
+*.woff  binary
+*.woff2 binary
+*.pdf  binary
+
+# Generated — collapse in diffs and exclude from language stats.
+package-lock.json linguist-generated=true -diff
