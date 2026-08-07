@@ -2,99 +2,20 @@
 
 /* ============================================================
    CoinJecko / Finance Hub — design tokens
-   Identity: calm, analytical, data-aware. Deep harbour blue-green
-   base, jade brand, amber signal. Market movement is never colour
-   alone — pair with ▲ / ▼ and text (see .delta-*).
-   Light/dark: system preference by default, explicit override via
-   html[data-theme]. Urdu (RTL) uses a Nastaliq-first stack.
+   Identity: dark navy canvas, gold brand, data-aware. Market
+   movement is never colour alone — pair with ▲ / ▼ and text
+   (see .delta-*).
+
+   DARK ONLY. There is deliberately no light theme and no
+   prefers-color-scheme branch: the brand gold (#ecbe24) reads at
+   1.8:1 on white, far below AA, so a light variant would either
+   fail contrast or abandon the identity. Committing to dark keeps
+   the bright gold everywhere it appears.
+
+   Urdu (RTL) uses a Nastaliq-first stack.
    ============================================================ */
 
 :root {
-  --canvas: #f6f7fa;
-  --surface: #ffffff;
-  --surface-raised: #eef1f5;
-  --ink: #0c121a;
-  --ink-muted: #58646f;
-  --border: #d8dee7;
-  /* Gold is the identity. On white it must be darkened to stay
-     legible — #ecbe24 reads at 1.8:1 against #fff, nowhere near AA —
-     so light mode uses a deeper gold and keeps the bright one for
-     dark surfaces where it belongs. */
-  --brand: #8a6a00;
-  --brand-strong: #6d5400;
-  --brand-contrast: #ffffff;
-  --accent: #b45309;
-  --up: #15803d;
-  --down: #b91c1c;
-  --focus: #8a6a00;
-
-  --radius: 0.625rem;
-  --gradient-hero: radial-gradient(
-      ellipse at top,
-      rgba(17, 58, 95, 0.10),
-      transparent 60%
-    ),
-    linear-gradient(180deg, #ffffff, #f6f7fa);
-  --gradient-gold: linear-gradient(135deg, #b58900, #8a6a00);
-  --shadow-card: 0 10px 30px -18px rgba(12, 18, 26, 0.35);
-  --shadow-glow: 0 0 60px -10px rgba(138, 106, 0, 0.25);
-
-  /* Section spectrum — one hue per top-level section, used for
-     wayfinding. Deliberately distinct from --up/--down, which carry
-     market meaning and must never be spent on decoration. Every value
-     clears 4.5:1 on --surface, so it is safe for text, not just fills. */
-  --sect-markets: #1d4ed8;
-  --sect-crypto: #6d28d9;
-  --sect-forex: #0e7490;
-  --sect-commodities: #c2410c;
-  --sect-economy: #be123c;
-  --sect-business: #0f766e;
-  --sect-personal: #a21caf;
-
-  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, -apple-system,
-    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-urdu: "Noto Nastaliq Urdu", "Jameel Noori Nastaleeq",
-    "Urdu Typesetting", "Nafees Nastaleeq", serif;
-  --font-mono: ui-monospace, "Cascadia Code", "Segoe UI Mono", Menlo, monospace;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --canvas: #080d16;
-    --surface: #0f1621;
-    --surface-raised: #171f2e;
-    --ink: #f3f5f8;
-    --ink-muted: #95a0ab;
-    --border: #252e3d;
-    --brand: #ecbe24;
-    --brand-strong: #faca4b;
-    --brand-contrast: #0c121a;
-    --accent: #f4a437;
-    --up: #37bb62;
-    --down: #ea3c3f;
-    --focus: #ecbe24;
-
-    --gradient-hero: radial-gradient(
-        ellipse at top,
-        rgba(17, 58, 95, 0.45),
-        transparent 60%
-      ),
-      linear-gradient(180deg, #0c121a, #03060b);
-    --gradient-gold: linear-gradient(135deg, #faca4b, #e29000);
-    --shadow-card: 0 10px 30px -15px rgba(0, 0, 0, 0.5);
-    --shadow-glow: 0 0 60px -10px rgba(236, 190, 36, 0.35);
-
-    --sect-markets: #93c5fd;
-    --sect-crypto: #c4b5fd;
-    --sect-forex: #67e8f9;
-    --sect-commodities: #fdba74;
-    --sect-economy: #fda4af;
-    --sect-business: #5eead4;
-    --sect-personal: #f0abfc;
-  }
-}
-
-:root[data-theme="dark"] {
   --canvas: #080d16;
   --surface: #0f1621;
   --surface-raised: #171f2e;
@@ -109,6 +30,7 @@
   --down: #ea3c3f;
   --focus: #ecbe24;
 
+  --radius: 0.625rem;
   --gradient-hero: radial-gradient(
       ellipse at top,
       rgba(17, 58, 95, 0.45),
@@ -119,6 +41,10 @@
   --shadow-card: 0 10px 30px -15px rgba(0, 0, 0, 0.5);
   --shadow-glow: 0 0 60px -10px rgba(236, 190, 36, 0.35);
 
+  /* Section spectrum — one hue per top-level section, used for
+     wayfinding. Deliberately distinct from --up/--down, which carry
+     market meaning and must never be spent on decoration. Every value
+     clears 4.5:1 on --surface, so it is safe for text, not just fills. */
   --sect-markets: #93c5fd;
   --sect-crypto: #c4b5fd;
   --sect-forex: #67e8f9;
@@ -126,6 +52,12 @@
   --sect-economy: #fda4af;
   --sect-business: #5eead4;
   --sect-personal: #f0abfc;
+
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-urdu: "Noto Nastaliq Urdu", "Jameel Noori Nastaleeq",
+    "Urdu Typesetting", "Nafees Nastaleeq", serif;
+  --font-mono: ui-monospace, "Cascadia Code", "Segoe UI Mono", Menlo, monospace;
 }
 
 @theme inline {
@@ -153,11 +85,10 @@
 }
 
 html {
-  color-scheme: light dark;
+  /* Dark only — tells the browser to render form controls,
+     scrollbars and the address bar to match. */
+  color-scheme: dark;
 }
-
-:root[data-theme="light"] { color-scheme: light; }
-:root[data-theme="dark"] { color-scheme: dark; }
 
 body {
   background: var(--canvas);

@@ -2,7 +2,6 @@ import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/get-dictionary";
 import { LocaleSwitcher } from "./LocaleSwitcher";
-import { ThemeToggle } from "./ThemeToggle";
 
 /**
  * Each section carries its own hue from the spectrum in globals.css.
@@ -85,7 +84,12 @@ export function Header({
           label={dict.a11y.switchLanguage}
           ariaLabel={dict.a11y.switchLanguageLabel}
         />
-        <ThemeToggle label={dict.a11y.toggleTheme} />
+        <Link
+          href={`/${locale}/dashboard`}
+          className="rounded-md bg-brand px-3 py-2 text-sm font-semibold text-brand-contrast hover:bg-brand-strong"
+        >
+          {dict.nav.dashboard}
+        </Link>
       </div>
       <div className="spectrum-bar" aria-hidden="true" />
       <nav aria-label={dict.a11y.mainNavigation}>

@@ -15,13 +15,13 @@
     "personalFinance": "ذاتی مالیات",
     "worldMarketMap": "عالمی مارکیٹ نقشہ",
     "menu": "مینیو",
-    "closeMenu": "مینیو بند کریں"
+    "closeMenu": "مینیو بند کریں",
+    "dashboard": "ڈیش بورڈ"
   },
   "a11y": {
     "skipToContent": "مرکزی مواد پر جائیں",
     "switchLanguage": "Language: English",
     "switchLanguageLabel": "یہ صفحہ انگریزی میں پڑھیں",
-    "toggleTheme": "ڈارک یا لائٹ تھیم تبدیل کریں",
     "mainNavigation": "مرکزی نیویگیشن",
     "footerNavigation": "فوٹر نیویگیشن",
     "breadcrumbs": "بریڈ کرمبس"
@@ -213,5 +213,16 @@
     "volume24h": "24 گھنٹے کا حجم",
     "btcDominance": "بٹ کوائن کا غلبہ",
     "ethDominance": "ایتھیریم کا غلبہ"
+  },
+  "dashboard": {
+    "title": "مارکیٹ ڈیش بورڈ",
+    "lead": "لائیو کرپٹو مارکیٹ ڈیٹا، عالمی مجموعے اور دنیا بھر کے ایکسچینج سیشن ایک ہی اسکرین پر۔",
+    "moversTitle": "24 گھنٹے کی نمایاں تبدیلیاں",
+    "gainers": "بڑھنے والے",
+    "losers": "گھٹنے والے",
+    "noMovers": "تبدیلی کا ڈیٹا دستیاب نہیں۔",
+    "marketTitle": "سکوں کی مارکیٹ",
+    "sessionsTitle": "ایکسچینج سیشن",
+    "updated": "ہر منٹ خود بخود تازہ ہوتا ہے"
   }
 }

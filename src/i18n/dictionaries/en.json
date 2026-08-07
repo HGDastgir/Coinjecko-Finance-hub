@@ -15,13 +15,13 @@
     "personalFinance": "Personal Finance",
     "worldMarketMap": "World Market Map",
     "menu": "Menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "dashboard": "Dashboard"
   },
   "a11y": {
     "skipToContent": "Skip to main content",
     "switchLanguage": "زبان: اردو",
     "switchLanguageLabel": "Read this page in Urdu",
-    "toggleTheme": "Toggle dark or light theme",
     "mainNavigation": "Main navigation",
     "footerNavigation": "Footer navigation",
     "breadcrumbs": "Breadcrumbs"
@@ -213,5 +213,16 @@
     "volume24h": "24h volume",
     "btcDominance": "BTC dominance",
     "ethDominance": "ETH dominance"
+  },
+  "dashboard": {
+    "title": "Market dashboard",
+    "lead": "Live crypto market data, global aggregates and world exchange sessions on one screen.",
+    "moversTitle": "24h movers",
+    "gainers": "Gainers",
+    "losers": "Losers",
+    "noMovers": "Movement data unavailable.",
+    "marketTitle": "Coin market",
+    "sessionsTitle": "Exchange sessions",
+    "updated": "Auto-refreshes every minute"
   }
 }
