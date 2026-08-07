@@ -1,4 +1,6 @@
+import Image from "next/image";
 import Link from "next/link";
+import { brandLogo } from "@/content/brand";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/get-dictionary";
 import { LocaleSwitcher } from "./LocaleSwitcher";
@@ -67,17 +69,34 @@ export function Header({
   locale: Locale;
   dict: Dictionary;
 }) {
+  // Resolved from disk, so the header falls back to the text wordmark
+  // rather than a broken image when no logo file has been added.
+  const logo = brandLogo();
+
   return (
     <header className="border-b border-border bg-surface">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-4 py-3">
-        <Link
-          href={`/${locale}`}
-          className="me-auto flex items-baseline gap-2"
-        >
-          <span className="font-latin text-xl font-bold tracking-tight text-brand">
-            CoinJecko
+        <Link href={`/${locale}`} className="me-auto flex items-center gap-2.5">
+          {logo ? (
+            /* Decorative: the wordmark beside it already names the
+               site, so alt="" avoids a screen reader saying it twice. */
+            <Image
+              src={logo.src}
+              alt=""
+              width={36}
+              height={36}
+              priority
+              className="h-9 w-9 shrink-0 rounded-md object-contain"
+            />
+          ) : null}
+          <span className="flex items-baseline gap-2">
+            <span className="font-latin text-xl font-bold tracking-tight text-brand">
+              CoinJecko
+            </span>
+            <span className="text-sm text-ink-muted">
+              {dict.site.shortName}
+            </span>
           </span>
-          <span className="text-sm text-ink-muted">{dict.site.shortName}</span>
         </Link>
         <LocaleSwitcher
           currentLocale={locale}
