@@ -1,15 +1,21 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { useActionState } from "react";
+import { useSearchParams } from "next/navigation";
+import {
+  signInAction,
+  verifyMfaAction,
+  type SignInState,
+} from "@/lib/auth/actions";
 
 /**
- * Staff sign-in. Credentials go directly from the browser to
- * Supabase Auth over TLS — they never touch our own API routes or
- * logs. Progressive server-side protections (lockout, anomaly
- * detection) live in Supabase Auth settings; MFA verification is
- * enforced for privileged roles.
+ * Staff sign-in. The credential exchange runs in a Server Action so it
+ * can be rate-limited and audited (see src/lib/auth/actions.ts); this
+ * component only collects input and renders the result.
+ *
+ * The `next` parameter is passed through untouched — the server
+ * re-validates it with safeNextPath, because a value sanitised here
+ * would be trivially bypassed by posting to the action directly.
  */
 export function SignInForm({
   labels,
@@ -26,80 +32,34 @@ export function SignInForm({
   };
   locale: string;
 }) {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [mfaCode, setMfaCode] = useState("");
-  const [needsMfa, setNeedsMfa] = useState(false);
-  const [pending, setPending] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const next = searchParams.get("next") ?? "";
 
-  function safeNextPath(): string {
-    // Open-redirect guard: only same-site, same-locale paths.
-    const next = searchParams.get("next") ?? "";
-    return next.startsWith(`/${locale}/`) ? next : `/${locale}/admin`;
-  }
+  const [signInState, submitSignIn, signInPending] = useActionState<
+    SignInState | null,
+    FormData
+  >(signInAction, null);
 
-  async function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    setPending(true);
-    setError(null);
-    const supabase = createSupabaseBrowserClient();
+  const [mfaState, submitMfa, mfaPending] = useActionState<
+    SignInState | null,
+    FormData
+  >(verifyMfaAction, null);
 
-    try {
-      if (!needsMfa) {
-        const { error: signInError } =
-          await supabase.auth.signInWithPassword({ email, password });
-        if (signInError) {
-          // Generic message: never reveal whether the account exists.
-          setError(labels.genericError);
-          return;
-        }
-        const { data: aal } =
-          await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-        if (
-          aal?.nextLevel === "aal2" &&
-          aal.nextLevel !== aal.currentLevel
-        ) {
-          setNeedsMfa(true);
-          return;
-        }
-        router.replace(safeNextPath());
-        router.refresh();
-        return;
-      }
-
-      const { data: factors } = await supabase.auth.mfa.listFactors();
-      const totp = factors?.totp?.[0];
-      if (!totp) {
-        setError(labels.genericError);
-        return;
-      }
-      const { data: challenge, error: challengeError } =
-        await supabase.auth.mfa.challenge({ factorId: totp.id });
-      if (challengeError || !challenge) {
-        setError(labels.genericError);
-        return;
-      }
-      const { error: verifyError } = await supabase.auth.mfa.verify({
-        factorId: totp.id,
-        challengeId: challenge.id,
-        code: mfaCode,
-      });
-      if (verifyError) {
-        setError(labels.genericError);
-        return;
-      }
-      router.replace(safeNextPath());
-      router.refresh();
-    } finally {
-      setPending(false);
-    }
-  }
+  const needsMfa =
+    signInState?.status === "mfa_required" ||
+    mfaState?.status === "mfa_required";
+  const pending = signInPending || mfaPending;
+  const message = needsMfa ? mfaState?.message : signInState?.message;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+    <form
+      action={needsMfa ? submitMfa : submitSignIn}
+      className="space-y-4"
+      noValidate
+    >
+      <input type="hidden" name="locale" value={locale} />
+      <input type="hidden" name="next" value={next} />
+
       {!needsMfa ? (
         <>
           <div>
@@ -108,11 +68,10 @@ export function SignInForm({
             </label>
             <input
               id="email"
+              name="email"
               type="email"
               autoComplete="email"
               required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
               className="w-full rounded-md border border-border bg-surface px-3 py-2"
             />
           </div>
@@ -125,11 +84,10 @@ export function SignInForm({
             </label>
             <input
               id="password"
+              name="password"
               type="password"
               autoComplete="current-password"
               required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
               className="w-full rounded-md border border-border bg-surface px-3 py-2"
             />
           </div>
@@ -141,21 +99,20 @@ export function SignInForm({
           </label>
           <input
             id="mfa-code"
+            name="code"
             type="text"
             inputMode="numeric"
             autoComplete="one-time-code"
             pattern="[0-9]{6}"
             required
-            value={mfaCode}
-            onChange={(e) => setMfaCode(e.target.value)}
             className="w-full rounded-md border border-border bg-surface px-3 py-2 font-latin tracking-widest"
           />
         </div>
       )}
 
-      {error ? (
+      {message ? (
         <p role="alert" className="text-sm text-down">
-          {error}
+          {message}
         </p>
       ) : null}
 

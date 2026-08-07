@@ -34,6 +34,10 @@ yarn-error.log*
 .env*
 !.env.example
 
+# local tooling — launch.json holds an absolute path to this machine's
+# node binary, so it is per-developer rather than shared config
+.claude/launch.json
+
 # vercel
 .vercel
 
