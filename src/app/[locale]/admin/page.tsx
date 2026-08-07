@@ -2,13 +2,15 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { defaultLocale, isLocale, type Locale } from "@/i18n/config";
 import { getCurrentUser } from "@/lib/auth/session";
+import { hasPermission } from "@/lib/auth/permissions";
+import { getEditorialQueue } from "@/lib/content/articles";
+import { EditorialQueue } from "@/components/admin/EditorialQueue";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 
 /**
- * Admin shell (Phase 9 builds the full CMS here). Defence in depth:
- * the request proxy already redirects unauthenticated visitors, and
- * this server component re-checks the session + active flag before
- * rendering anything.
+ * Admin shell. Defence in depth: the request proxy already redirects
+ * unauthenticated visitors, and this server component re-checks the
+ * session + active flag before rendering anything.
  */
 
 export const dynamic = "force-dynamic";
@@ -42,6 +44,11 @@ export default async function AdminPage({
     redirect(`/${safeLocale}/sign-in?next=${encodeURIComponent(`/${safeLocale}/admin`)}`);
   }
 
+  const canSeeQueue =
+    hasPermission(user.role, "content.review") ||
+    hasPermission(user.role, "content.create");
+  const articles = canSeeQueue ? await getEditorialQueue() : null;
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-12">
       <h1 className="text-2xl font-semibold">Admin</h1>
@@ -55,10 +62,31 @@ export default async function AdminPage({
           <dd className="font-latin">{user.role ?? "none assigned"}</dd>
         </div>
       </dl>
-      <p className="mt-6 text-sm text-ink-muted">
-        The editorial CMS (content workflow, market data, adverts,
-        newsletter) arrives in Phase 9. Access is already role-gated and
-        audit-logged.
+
+      {!canSeeQueue ? (
+        <p className="mt-6 rounded-lg border border-dashed border-border bg-surface p-4 text-sm text-ink-muted">
+          Your role has no editorial permissions, so no content queue is
+          shown here.
+        </p>
+      ) : articles === null ? (
+        <p className="mt-6 rounded-lg border border-dashed border-border bg-surface p-4 text-sm text-ink-muted">
+          The content backend is not reachable, so the editorial queue is
+          unavailable. Configure Supabase and apply the migrations in
+          <span className="font-latin"> supabase/migrations/</span> to enable
+          it.
+        </p>
+      ) : (
+        <EditorialQueue
+          articles={articles}
+          role={user.role}
+          userId={user.id}
+          locale={safeLocale}
+        />
+      )}
+
+      <p className="mt-8 text-sm text-ink-muted">
+        Media, adverts and newsletter management arrive later in Phase 9.
+        Every action here is role-gated and audit-logged.
       </p>
     </div>
   );

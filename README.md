@@ -18,7 +18,7 @@ Phases 1–7 of 12 complete. The platform builds, serves both locales, enforces 
 | 6 | Crypto, forex, commodities + converter | ✅ (quotes/rates activate with licensed providers) |
 | 7 | Economic calendar | ✅ (dated events activate with a licensed feed) |
 | 8 | Media (blogs, vlogs, podcasts, shorts) | ⬜ |
-| 9 | Admin CMS (editorial workflow, ads, newsletter) | ⬜ |
+| 9 | Admin CMS (editorial workflow, ads, newsletter) | 🚧 (editorial queue + workflow transitions live; ads/newsletter pending) |
 | 10 | Security testing | ⬜ |
 | 11 | SEO & performance testing | ⬜ |
 | 12 | Production launch checklist | ⬜ |
@@ -51,6 +51,7 @@ npm run lint
 - Every response gets a per-request nonce CSP (`script-src 'nonce-…' 'strict-dynamic'`, `frame-ancestors 'none'`), HSTS in production, and the standard hardening headers — set in `src/proxy.ts`.
 - Authorisation is enforced by PostgreSQL RLS policies driven by a role → permission matrix; the TypeScript mirror is defence-in-depth, not the boundary.
 - `audit_log` and `login_events` are append-only at the database level (triggers + revoked grants).
+- Editorial status transitions are enforced by a database trigger (`enforce_editorial_workflow`), not just by the UI: reaching or leaving `published` requires `content.publish` and approving requires `content.review`, so an author cannot publish their own draft.
 - Rate limiting: in-memory backstop today; production abuse protection is expected from CDN/WAF plus a durable store.
 - Security is continuously tested and maintained — the existence of these controls is not a claim of certification, and no compliance certification is claimed without an independent audit.
 
