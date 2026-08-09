@@ -197,3 +197,51 @@ export async function verifyMfaAction(
 
   redirect(safeNextPath(formData.get("next")?.toString(), locale));
 }
+
+/**
+ * Staff sign-out.
+ *
+ * Runs server-side so the session cookies are cleared by the same
+ * code path that set them — calling supabase.auth.signOut() in the
+ * browser would drop the client's copy while leaving the httpOnly
+ * cookie in place, which reads as "signed out" until the next
+ * request proves otherwise.
+ *
+ * The audit event is written BEFORE the sign-out, while the session
+ * still identifies who is leaving. Afterwards there is no actor to
+ * attribute it to, and an audit trail of anonymous sign-outs is
+ * worth little.
+ *
+ * Failures are not surfaced: whatever the server says, the intent was
+ * to leave, so the redirect happens either way rather than stranding
+ * someone on an admin page that appears still signed in.
+ */
+export async function signOutAction(formData: FormData): Promise<void> {
+  const locale = localeFrom(formData);
+
+  try {
+    const supabase = await createSupabaseServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user) {
+      const context = await auditContext();
+      await writeAuditEvent({
+        actorId: user.id,
+        action: "auth.sign_out",
+        entity: "auth",
+        entityId: user.id,
+        ...context,
+      });
+    }
+
+    await supabase.auth.signOut();
+  } catch (err) {
+    logger.warn("auth.sign_out_failed", {
+      reason: err instanceof Error ? err.message : "unknown",
+    });
+  }
+
+  redirect(`/${locale}`);
+}

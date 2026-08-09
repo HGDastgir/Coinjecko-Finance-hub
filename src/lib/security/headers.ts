@@ -36,6 +36,15 @@ export interface CspOptions {
   mode: CspMode;
   /** e.g. Supabase project origin for auth/API/websocket calls. */
   connectOrigins?: string[];
+  /**
+   * Origins allowed to serve images — the Supabase Storage host for
+   * editorial artwork. Passed in rather than hard-coded because the
+   * project ref differs per environment. Must stay in step with
+   * `remotePatterns` in next.config.ts: Next's image optimiser and
+   * the CSP are two independent gates and both have to allow the
+   * host, or images fail in one direction or the other.
+   */
+  imageOrigins?: string[];
 }
 
 export function buildContentSecurityPolicy({
@@ -43,6 +52,7 @@ export function buildContentSecurityPolicy({
   isDev,
   mode,
   connectOrigins = [],
+  imageOrigins = [],
 }: CspOptions): string {
   const connect = [SELF, ...connectOrigins].join(" ");
 
@@ -58,10 +68,16 @@ export function buildContentSecurityPolicy({
     // Coin logos from CoinGecko's image CDN. Must stay in step with
     // `remotePatterns` in next.config.ts — Next's optimiser and the CSP
     // are two independent gates and both have to allow the host.
-    `img-src ${SELF} data: blob: https://coin-images.coingecko.com`,
+    `img-src ${[SELF, "data:", "blob:", "https://coin-images.coingecko.com", ...imageOrigins].join(" ")}`,
     `font-src ${SELF}`,
     `connect-src ${connect}${isDev ? " ws:" : ""}`,
     `media-src ${SELF}`,
+    // Vlog episodes. youtube-nocookie.com is the privacy-preserving
+    // player origin (no tracking cookies before playback); the normal
+    // youtube.com host is deliberately NOT allowed to frame us. Paired
+    // with resolveVideoSource() in src/lib/content/video-embed.ts,
+    // which is the only place that builds one of these URLs.
+    `frame-src ${SELF} https://www.youtube-nocookie.com`,
     `object-src 'none'`,
     `base-uri ${SELF}`,
     `form-action ${SELF}`,

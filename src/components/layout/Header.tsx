@@ -3,6 +3,8 @@ import Link from "next/link";
 import { brandLogo } from "@/content/brand";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/get-dictionary";
+import { BreakingNewsBar } from "./BreakingNewsBar";
+import { HeaderPoster } from "./HeaderPoster";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 
 /**
@@ -60,6 +62,18 @@ const NAV_ITEMS: {
     dot: "bg-sect-personal",
     hover: "hover:text-sect-personal",
   },
+  {
+    key: "blog",
+    path: "/blog",
+    dot: "bg-sect-blog",
+    hover: "hover:text-sect-blog",
+  },
+  {
+    key: "vlogs",
+    path: "/vlogs",
+    dot: "bg-sect-vlogs",
+    hover: "hover:text-sect-vlogs",
+  },
 ];
 
 export function Header({
@@ -75,6 +89,7 @@ export function Header({
 
   return (
     <header className="border-b border-border bg-surface">
+      <HeaderPoster locale={locale} dict={dict} />
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-4 py-3">
         <Link href={`/${locale}`} className="me-auto flex items-center gap-2.5">
           {logo ? (
@@ -111,6 +126,7 @@ export function Header({
         </Link>
       </div>
       <div className="spectrum-bar" aria-hidden="true" />
+      <BreakingNewsBar locale={locale} dict={dict} />
       <nav aria-label={dict.a11y.mainNavigation}>
         <ul className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 py-1">
           {NAV_ITEMS.map(({ key, path, dot, hover }) => (

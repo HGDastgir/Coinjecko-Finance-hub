@@ -32,17 +32,22 @@ function clientIp(request: NextRequest): string {
 
 function buildCsp(nonce: string, mode: "strict-nonce" | "static-site") {
   const connectOrigins: string[] = [];
+  const imageOrigins: string[] = [];
   if (publicEnv.NEXT_PUBLIC_SUPABASE_URL) {
-    connectOrigins.push(new URL(publicEnv.NEXT_PUBLIC_SUPABASE_URL).origin);
+    const origin = new URL(publicEnv.NEXT_PUBLIC_SUPABASE_URL).origin;
+    connectOrigins.push(origin);
     // Supabase realtime uses a websocket on the same host.
-    connectOrigins.push(
-      new URL(publicEnv.NEXT_PUBLIC_SUPABASE_URL).origin.replace(
-        /^http/,
-        "ws",
-      ),
-    );
+    connectOrigins.push(origin.replace(/^http/, "ws"));
+    // Editorial artwork is served from Storage on the same host.
+    imageOrigins.push(origin);
   }
-  return buildContentSecurityPolicy({ nonce, isDev, mode, connectOrigins });
+  return buildContentSecurityPolicy({
+    nonce,
+    isDev,
+    mode,
+    connectOrigins,
+    imageOrigins,
+  });
 }
 
 function applySecurityHeaders(

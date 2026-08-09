@@ -22,6 +22,22 @@ export interface AssetFaqItem {
   a: string;
 }
 
+/**
+ * A resolved quote, already formatted by the caller. This component
+ * renders it and never derives one — the page that owns the provider
+ * owns the formatting, so a price cannot be reformatted into something
+ * the provider did not say.
+ */
+export interface AssetQuote {
+  /** Formatted for display, e.g. "$4,343.30". */
+  price: string;
+  /** Formatted timestamp, or null when it could not be stated. */
+  quotedAt: string | null;
+  provider: string;
+  providerUrl: string;
+  isReference: boolean;
+}
+
 export function AssetDetail({
   locale,
   dict,
@@ -34,6 +50,7 @@ export function AssetDetail({
   facts,
   faq,
   riskNote,
+  quote,
 }: {
   locale: Locale;
   dict: Dictionary;
@@ -48,6 +65,8 @@ export function AssetDetail({
   facts: AssetFact[];
   faq: AssetFaqItem[];
   riskNote?: string;
+  /** Omitted when no provider covers this asset. */
+  quote?: AssetQuote | null;
 }) {
   const m = dict.markets;
   const base = publicEnv.NEXT_PUBLIC_SITE_URL;
@@ -112,16 +131,52 @@ export function AssetDetail({
         </p>
       ) : null}
 
-      {/* Live data — honest placeholder until a provider is connected */}
+      {/* Live data. A real quote when a provider is connected for this
+          asset; the honest placeholder when there is none. Never both,
+          and never a number without its provider and timestamp. */}
       <section aria-labelledby="asset-data" className="mt-8">
         <h2 id="asset-data" className="text-xl font-semibold">
           {m.dataTitle}
         </h2>
-        <div className="mt-3 rounded-lg border border-dashed border-border bg-surface p-5 text-sm text-ink-muted">
-          <p>{dict.data.notConnected}</p>
-          <p className="mt-2">{dict.data.notAdvice}</p>
-          {riskNote ? <p className="mt-2">{riskNote}</p> : null}
-        </div>
+        {quote ? (
+          <div className="mt-3 rounded-lg border border-border bg-surface p-5">
+            <p className="font-latin text-3xl font-bold tabular-nums">
+              {quote.price}
+            </p>
+            <p className="mt-2 text-xs text-ink-muted">
+              <a
+                href={quote.providerUrl}
+                rel="nofollow noopener noreferrer"
+                target="_blank"
+                className="font-latin hover:text-brand"
+              >
+                {quote.provider}
+              </a>
+              {quote.quotedAt ? (
+                <>
+                  {" · "}
+                  {dict.data.quotedAt}{" "}
+                  <span className="font-latin">{quote.quotedAt}</span>
+                </>
+              ) : null}
+            </p>
+            {quote.isReference ? (
+              <p className="mt-1 text-xs text-ink-muted">
+                {dict.data.referenceRate}
+              </p>
+            ) : null}
+            <p className="mt-3 text-sm text-ink-muted">{dict.data.notAdvice}</p>
+            {riskNote ? (
+              <p className="mt-2 text-sm text-ink-muted">{riskNote}</p>
+            ) : null}
+          </div>
+        ) : (
+          <div className="mt-3 rounded-lg border border-dashed border-border bg-surface p-5 text-sm text-ink-muted">
+            <p>{dict.data.notConnected}</p>
+            <p className="mt-2">{dict.data.notAdvice}</p>
+            {riskNote ? <p className="mt-2">{riskNote}</p> : null}
+          </div>
+        )}
       </section>
 
       <section aria-labelledby="asset-what" className="mt-8">

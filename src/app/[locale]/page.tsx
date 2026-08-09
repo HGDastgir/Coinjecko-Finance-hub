@@ -4,6 +4,7 @@ import { isLocale, defaultLocale, type Locale } from "@/i18n/config";
 import { getDictionary, type Dictionary } from "@/i18n/get-dictionary";
 import { getFeaturedExchangeStatuses } from "@/lib/markets/exchange-status";
 import { GlobalCryptoStats } from "@/components/markets/GlobalCryptoStats";
+import { AdSlot } from "@/components/layout/AdSlot";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 
 /** Recompute exchange session status every 5 minutes. */
@@ -66,6 +67,8 @@ export default async function HomePage({
       </section>
 
       <div className="mx-auto max-w-6xl px-4">
+
+      <AdSlot placement="top-leaderboard" label={dict.ads.label} />
 
       {/* World exchange status */}
       <section aria-labelledby="exchange-status-heading" className="py-8">
@@ -139,6 +142,8 @@ export default async function HomePage({
           ))}
         </ul>
       </section>
+
+      <AdSlot placement="in-feed" label={dict.ads.label} />
 
       {/* Newsroom */}
       <section aria-labelledby="newsroom-heading" className="py-8">

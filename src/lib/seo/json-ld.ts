@@ -47,6 +47,79 @@ export function breadcrumbSchema(
   };
 }
 
+/**
+ * NewsArticle for a published editorial piece. Only fields we actually
+ * hold are emitted — an absent author or date is left out rather than
+ * filled with a plausible-looking value, which is the same honesty rule
+ * the market surfaces follow.
+ */
+export function newsArticleSchema({
+  locale,
+  url,
+  headline,
+  description,
+  datePublished,
+  dateModified,
+  authorName,
+}: {
+  locale: Locale;
+  url: string;
+  headline: string;
+  description?: string | null;
+  datePublished?: string | null;
+  dateModified?: string | null;
+  authorName?: string | null;
+}): JsonLd {
+  const base = publicEnv.NEXT_PUBLIC_SITE_URL;
+  return {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    headline,
+    url,
+    mainEntityOfPage: url,
+    inLanguage: locale === "ur" ? "ur-PK" : "en",
+    ...(description ? { description } : {}),
+    ...(datePublished ? { datePublished } : {}),
+    ...(dateModified ? { dateModified } : {}),
+    ...(authorName ? { author: { "@type": "Person", name: authorName } } : {}),
+    publisher: {
+      "@type": "Organization",
+      name: "CoinJecko Finance Hub",
+      logo: { "@type": "ImageObject", url: `${base}/icon.svg` },
+    },
+  };
+}
+
+/** VideoObject for a vlog episode. Same rule: no invented fields. */
+export function videoObjectSchema({
+  url,
+  name,
+  description,
+  uploadDate,
+  durationSeconds,
+  embedUrl,
+}: {
+  url: string;
+  name: string;
+  description?: string | null;
+  uploadDate?: string | null;
+  durationSeconds?: number | null;
+  embedUrl?: string | null;
+}): JsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    name,
+    url,
+    ...(description ? { description } : {}),
+    ...(uploadDate ? { uploadDate } : {}),
+    ...(durationSeconds !== null && durationSeconds !== undefined
+      ? { duration: `PT${durationSeconds}S` }
+      : {}),
+    ...(embedUrl ? { embedUrl } : {}),
+  };
+}
+
 export function serializeJsonLd(schema: JsonLd): string {
   // "<" escaped to prevent </script> breakout if any value ever
   // carries user-controlled text.

@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-CoinJecko / Finance Hub — a secure, SEO-first, bilingual (English `/en` + Urdu `/ur`, RTL) global finance and market-intelligence platform. Next.js 16 (App Router, Turbopack), TypeScript, Tailwind CSS v4, Supabase (PostgreSQL + Auth). Built in 12 planned phases; Phases 1–7 exist (security core, DB schema, design system, i18n, SEO plumbing, homepage, trust pages, world market map, crypto/forex/commodities + converter, economic calendar). Quote and rate surfaces stay gated until licensed providers are connected — see the honest-data rule below.
+CoinJecko / Finance Hub — a secure, SEO-first, bilingual (English `/en` + Urdu `/ur`, RTL) global finance and market-intelligence platform. Next.js 16 (App Router, Turbopack), TypeScript, Tailwind CSS v4, Supabase (PostgreSQL + Auth). Built in 12 planned phases; Phases 1–7 exist (security core, DB schema, design system, i18n, SEO plumbing, homepage, trust pages, world market map, crypto/forex/commodities + converter, economic calendar), plus the editorial surfaces: blog (`/blog`), vlogs (`/vlogs`), a header breaking-news strip, and admin create/edit for articles and videos. Quote and rate surfaces stay gated until licensed providers are connected — see the honest-data rule below.
 
 ## Commands
 
@@ -32,7 +32,7 @@ Tests run on Node's built-in runner with native TypeScript stripping — there i
 
 **Audit trail is append-only at the DB level** — `audit_log` + `login_events` have triggers that raise on UPDATE/DELETE plus revoked grants; content tables get row-change triggers (`log_row_change()`). Application-side events go through `writeAuditEvent()` (`src/lib/audit.ts`), which must never crash a request.
 
-**Content model is bilingual-first** — `articles` (locale-neutral workflow/status/author) + `article_translations` (per-locale slug/title/body/SEO, unique per locale). Editorial workflow enum: draft → review → approved → published → archived. Public RLS policies expose only `published` rows.
+**Content model is bilingual-first** — `articles` (locale-neutral workflow/status/author) + `article_translations` (per-locale slug/title/body/SEO, unique per locale). Editorial workflow enum: draft → review → approved → published → archived. Public RLS policies expose only `published` rows. Public reads go through `src/lib/supabase/public.ts` (anon, cookie-free) so those pages stay prerenderable; article bodies are stored and rendered as **plain text paragraphs, never HTML** — the public CSP tier allows inline script, so stored markup would be a scripting vector. Breaking news is `article_type = 'breaking_news'`; vlogs are the `videos` table, embedded only via `resolveVideoSource()` (youtube-nocookie is the sole allow-listed frame origin).
 
 **SEO plumbing** — every page builds metadata through `buildPageMetadata()` (`src/lib/seo/metadata.ts`): canonical + hreflang (`en`, `ur-PK`, `x-default`) from the locale-less path. JSON-LD via `src/lib/seo/json-ld.ts` (always serialize with `serializeJsonLd` — it escapes `<`). `sitemap.ts`/`robots.ts` at `src/app/`. Trust/legal pages are a slug-allowlisted dynamic route `[locale]/[slug]` fed from `src/content/legal-pages.ts` with `dynamicParams = false`.
 

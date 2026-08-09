@@ -7,6 +7,7 @@ import { publicEnv } from "@/lib/env";
 import {
   CALENDAR_COUNTRIES,
   getUpcomingEvents,
+  publisherUrl,
   RECURRING_EVENTS,
 } from "@/lib/markets/economic-events";
 import { EconomicCalendar } from "@/components/markets/EconomicCalendar";
@@ -103,7 +104,10 @@ export default async function EconomyPage({
         </h2>
         <p className="mt-1 mb-5 text-sm text-ink-muted">{e.guideLead}</p>
         <EconomicCalendar
-          guide={RECURRING_EVENTS}
+          guide={RECURRING_EVENTS.map((event) => ({
+            ...event,
+            publisherUrl: publisherUrl(event.publisher),
+          }))}
           events={events}
           countries={CALENDAR_COUNTRIES.map((c) => ({
             code: c.code,

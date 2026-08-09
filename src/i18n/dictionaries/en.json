@@ -13,6 +13,8 @@
     "economy": "Economy",
     "business": "Business",
     "personalFinance": "Personal Finance",
+    "blog": "Blogs",
+    "vlogs": "Vlogs",
     "worldMarketMap": "World Market Map",
     "menu": "Menu",
     "closeMenu": "Close menu",
@@ -29,7 +31,7 @@
     "breadcrumbs": "Breadcrumbs"
   },
   "home": {
-    "heroTitle": "Markets, money & crypto — without the noise.",
+    "heroTitle": "Markets. Money. Crypto. Clear Insights.",
     "heroLead": "Live prices, breaking news, deep dives and a daily morning brief covering crypto, forex, gold, oil and the Pakistan & global stock markets.",
     "exchangeStatusTitle": "World exchange status",
     "exchangeStatusLead": "Live trading-session status for major exchanges, computed from official local trading hours.",
@@ -81,6 +83,7 @@
     "country": "Country",
     "timezone": "Timezone",
     "tradingWeek": "Trading week",
+    "exchangeSite": "Live prices on the exchange",
     "localTime": "Local time",
     "whatItIs": "What this market is",
     "whyItMatters": "Why this market matters",
@@ -162,12 +165,133 @@
     "forecast": "Forecast",
     "previous": "Previous"
   },
+  "sections": {
+    "coverageTitle": "What we cover",
+    "browseTopic": "Browse articles on this topic",
+    "newsroomGate": "No articles have been published in this section yet. Our newsroom launches with the content system — every piece will carry a named author, publication and update dates, its sources and a corrections trail. Until then we publish nothing here rather than filler.",
+    "relatedTitle": "Related sections",
+    "business": {
+      "title": "Business",
+      "lead": "Companies, earnings, trade and the corporate decisions behind the headline numbers — reported with the data attached.",
+      "topics": {
+        "earnings-results": {
+          "title": "Earnings & results",
+          "description": "What listed companies actually reported, how it compared with expectations, and which line moved the share price."
+        },
+        "corporate-strategy": {
+          "title": "Corporate strategy",
+          "description": "Mergers, acquisitions, listings and restructurings — and what they change for customers, staff and shareholders."
+        },
+        "banking-credit": {
+          "title": "Banking & credit",
+          "description": "Bank profitability, lending conditions and what borrowing actually costs a business across our regions."
+        },
+        "trade-supply-chains": {
+          "title": "Trade & supply chains",
+          "description": "Imports, exports, shipping costs and the trade flows that set prices in Pakistan, South Asia and the Gulf."
+        },
+        "energy-industry": {
+          "title": "Energy & industry",
+          "description": "Fuel costs, power supply and industrial output — the inputs sitting underneath manufacturing margins."
+        },
+        "policy-regulation": {
+          "title": "Policy & regulation",
+          "description": "Tax, tariffs and regulatory change explained in terms of who pays and when it takes effect."
+        }
+      }
+    },
+    "personalFinance": {
+      "title": "Personal Finance",
+      "lead": "Saving, borrowing, budgeting and protection — everyday money decisions explained in plain language, never as advice.",
+      "topics": {
+        "saving-deposits": {
+          "title": "Saving & deposits",
+          "description": "Profit rates, savings certificates and deposit accounts, compared on the terms that actually apply to you."
+        },
+        "borrowing-debt": {
+          "title": "Borrowing & debt",
+          "description": "How loan pricing, mark-up and repayment schedules work — the arithmetic to run before you sign."
+        },
+        "budgeting-inflation": {
+          "title": "Budgeting & inflation",
+          "description": "Tracking what your income buys as prices move, with the official inflation data behind the number."
+        },
+        "investing-basics": {
+          "title": "Investing basics",
+          "description": "How shares, funds, bonds and commodities work: mechanics and risk, never recommendations to buy or sell."
+        },
+        "remittances-transfers": {
+          "title": "Remittances & transfers",
+          "description": "Sending money home — the corridors, the charges, and the exchange-rate spread worth checking first."
+        },
+        "insurance-protection": {
+          "title": "Insurance & protection",
+          "description": "Health, life and vehicle cover explained: what is included, what is excluded, and what it costs."
+        }
+      }
+    }
+  },
+  "breaking": {
+    "label": "Breaking",
+    "ariaLabel": "Breaking news headlines",
+    "seeAll": "All breaking news"
+  },
+  "blog": {
+    "title": "Blogs",
+    "lead": "Explainers, analysis and market updates from our newsroom — every piece with its author, its dates and its sources on the page.",
+    "gate": "The content backend is not connected, so no articles can be listed. We show nothing here rather than placeholder headlines.",
+    "empty": "No articles have been published yet. The first pieces appear here as soon as the newsroom publishes them.",
+    "emptyForTopic": "Nothing has been published on this topic yet.",
+    "filteredBy": "Filtered by topic",
+    "clearFilter": "Show all articles",
+    "readMore": "Read the article",
+    "backToBlog": "All blogs",
+    "staffEditing": "You are signed in as staff",
+    "staffNew": "Newsroom tools",
+    "by": "By",
+    "publishedOn": "Published",
+    "updatedOn": "Updated",
+    "sourcesTitle": "Sources",
+    "correctionsTitle": "Corrections",
+    "sponsoredLabel": "Sponsored content",
+    "machineTranslated": "This Urdu translation was machine-generated and has not yet been reviewed by an editor. The English original is authoritative.",
+    "typeLabels": {
+      "breaking_news": "Breaking news",
+      "market_update": "Market update",
+      "explainer": "Explainer",
+      "analysis": "Analysis",
+      "opinion": "Opinion",
+      "interview": "Interview",
+      "sponsored": "Sponsored"
+    }
+  },
+  "vlogs": {
+    "title": "Vlogs",
+    "lead": "Market briefings and explainers on video — the same editorial standards as our written coverage.",
+    "gate": "The media backend is not connected, so no videos can be listed. We show nothing here rather than empty players.",
+    "empty": "No videos have been published yet. Episodes appear here as soon as they are released.",
+    "watch": "Watch",
+    "backToVlogs": "All vlogs",
+    "staffEditing": "You are signed in as staff",
+    "staffNew": "Newsroom tools",
+    "publishedOn": "Published",
+    "duration": "Duration",
+    "shortLabel": "Short",
+    "playerUnavailable": "This episode has no playable source attached yet.",
+    "privacyNote": "Video is embedded through YouTube's no-cookie player, which does not set tracking cookies until you press play."
+  },
+  "ads": {
+    "label": "Advertisement"
+  },
   "data": {
     "dataProvider": "Data provider",
     "lastUpdated": "Last updated",
     "delayedNotice": "Market data delayed by {minutes} minutes where applicable.",
     "notConnected": "Live data provider not yet connected.",
-    "notAdvice": "Market data is provided for information only and is not financial advice."
+    "notAdvice": "Market data is provided for information only and is not financial advice.",
+    "quotedAt": "Quoted",
+    "referenceRate": "Daily reference price, not a live tick.",
+    "assetNotConnected": "No licensed price feed is connected for this benchmark yet, so no figure is shown."
   },
   "footer": {
     "about": "About us",
@@ -183,6 +307,7 @@
     "financialDisclaimer": "Financial Disclaimer",
     "dataRequest": "Data Request Contact",
     "rightsReserved": "All rights reserved.",
+    "staffSignIn": "Staff sign-in",
     "contact": "Contact us",
     "advertise": "Advertise with us"
   },

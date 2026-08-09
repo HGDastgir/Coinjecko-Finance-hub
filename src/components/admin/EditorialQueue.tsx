@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ArticleRowActions } from "@/components/admin/ArticleRowActions";
 import {
   availableTransitions,
@@ -132,7 +133,13 @@ export function EditorialQueue({
                   ) : null}
                 </p>
 
-                <div className="mt-3 border-t border-border pt-3">
+                <div className="mt-3 flex flex-wrap items-center gap-3 border-t border-border pt-3">
+                  <Link
+                    href={`/${locale}/admin/articles/${article.id}`}
+                    className="rounded-md border border-border px-2.5 py-1 text-xs font-medium hover:bg-surface-raised"
+                  >
+                    Edit
+                  </Link>
                   <ArticleRowActions
                     articleId={article.id}
                     locale={locale}

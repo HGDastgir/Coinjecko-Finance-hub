@@ -34,6 +34,14 @@ export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
 
+/**
+ * The header carries a breaking-news strip, so every page under this
+ * layout has to be able to go stale. Five minutes keeps prerendering
+ * (and the CSP's static-site tier) intact while bounding how old a
+ * headline can be; individual routes still set a shorter window.
+ */
+export const revalidate = 300;
+
 export async function generateMetadata({
   params,
 }: {

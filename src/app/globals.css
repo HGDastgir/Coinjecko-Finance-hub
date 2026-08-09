@@ -52,6 +52,11 @@
   --sect-economy: #fda4af;
   --sect-business: #5eead4;
   --sect-personal: #f0abfc;
+  /* Blog and vlogs join the spectrum late, so they take the two hues
+     still clearly separable from the seven above — and from --up /
+     --down, which are reserved for market meaning. */
+  --sect-blog: #a5b4fc;
+  --sect-vlogs: #cbd5e1;
 
   --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -80,6 +85,8 @@
   --color-sect-economy: var(--sect-economy);
   --color-sect-business: var(--sect-business);
   --color-sect-personal: var(--sect-personal);
+  --color-sect-blog: var(--sect-blog);
+  --color-sect-vlogs: var(--sect-vlogs);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
 }
@@ -231,6 +238,57 @@ html[dir="rtl"] .ticker-track {
   }
   .ticker-group[data-copy="1"] {
     display: none;
+  }
+}
+
+/* ------------------------------------------------------------
+   Header poster — 3D presentation of the flat banner artwork.
+
+   The image itself is 2D; depth comes from a perspective viewport, a
+   resting tilt, stacked shadows that read as distance from the page,
+   and a specular sheen swept across the surface. --tilt-x / --tilt-y
+   are updated by PosterTilt as the pointer moves; with no JS, no
+   pointer, or reduced motion they stay at the resting angle and the
+   poster is simply a well-lit still.
+   ------------------------------------------------------------ */
+.poster-stage {
+  perspective: 1400px;
+  perspective-origin: 50% 40%;
+}
+
+.poster-3d {
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  transform-style: preserve-3d;
+  transform: rotateX(calc(4deg + var(--tilt-x))) rotateY(var(--tilt-y));
+  transition: transform 220ms ease-out;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.5),
+    0 12px 24px -8px rgba(0, 0, 0, 0.65),
+    0 40px 70px -25px rgba(0, 0, 0, 0.8),
+    0 0 60px -20px rgba(236, 190, 36, 0.28);
+}
+
+/* Sheen. Decorative only, so it never intercepts a click. */
+.poster-3d::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.1) 48%,
+    rgba(255, 255, 255, 0.02) 56%,
+    transparent 70%
+  );
+  mix-blend-mode: screen;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .poster-3d {
+    transition: none;
+    transform: rotateX(4deg);
   }
 }
 

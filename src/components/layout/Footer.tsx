@@ -72,8 +72,26 @@ export function Footer({
         <p className="mt-8 border-t border-border pt-6 text-xs leading-relaxed text-ink-muted">
           {dict.disclaimer.short}
         </p>
-        <p className="mt-4 text-xs text-ink-muted">
-          © {year} CoinJecko / Finance Hub. {dict.footer.rightsReserved}
+        <p className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink-muted">
+          <span>
+            © {year} CoinJecko / Finance Hub. {dict.footer.rightsReserved}
+          </span>
+          {/* The newsroom's way in. Discoverability is not the access
+              control here — roles and row-level security are — so
+              hiding the link only cost staff time.
+
+              Points at sign-in, NOT /admin: the admin gate fails closed
+              to the homepage, so a link labelled "sign in" that landed
+              there would look broken. `next` carries the reader on to
+              admin once authenticated, and safeNextPath() rejects it if
+              it is ever anything but a same-locale path. */}
+          <Link
+            href={`/${locale}/sign-in?next=${encodeURIComponent(`/${locale}/admin`)}`}
+            className="hover:text-brand"
+            rel="nofollow"
+          >
+            {dict.footer.staffSignIn}
+          </Link>
         </p>
       </div>
     </footer>

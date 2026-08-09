@@ -26,6 +26,16 @@ const nextConfig: NextConfig = {
         hostname: "coin-images.coingecko.com",
         pathname: "/coins/images/**",
       },
+      // Editorial artwork in Supabase Storage. Scoped to the public
+      // object path so a signed or admin storage URL can never be
+      // optimised and cached by us. Paired with the img-src entry the
+      // proxy builds from NEXT_PUBLIC_SUPABASE_URL — both gates must
+      // allow the host or images fail one way or the other.
+      {
+        protocol: "https",
+        hostname: "*.supabase.co",
+        pathname: "/storage/v1/object/public/**",
+      },
     ],
   },
   async headers() {

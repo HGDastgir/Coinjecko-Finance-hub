@@ -5,8 +5,16 @@ import { getDictionary } from "@/i18n/get-dictionary";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 import { COMMODITIES, getCommodityBySlug } from "@/lib/markets/asset-data";
 import { AssetDetail } from "@/components/markets/AssetDetail";
+import {
+  fetchCommodityQuotes,
+  formatCommodityPrice,
+} from "@/lib/markets/commodity-prices";
+import { formatQuoteTime } from "@/lib/markets/quote-time";
 
 export const dynamicParams = false;
+
+/** Metals tick continuously; a minute matches the upstream cache. */
+export const revalidate = 60;
 
 export function generateStaticParams() {
   return locales.flatMap((locale) =>
@@ -42,8 +50,22 @@ export default async function CommodityPage({
   if (!commodity) notFound();
   const dict = await getDictionary(locale);
 
+  const quotes = await fetchCommodityQuotes();
+  const live = quotes?.[commodity.slug] ?? null;
+
   return (
     <AssetDetail
+      quote={
+        live
+          ? {
+              price: formatCommodityPrice(live.price),
+              quotedAt: formatQuoteTime(live.quotedAt, locale),
+              provider: live.provider,
+              providerUrl: live.providerUrl,
+              isReference: live.isReference,
+            }
+          : null
+      }
       locale={locale}
       dict={dict}
       sectionTitle={dict.assets.commoditiesTitle}

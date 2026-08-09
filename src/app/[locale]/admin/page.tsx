@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { defaultLocale, isLocale, type Locale } from "@/i18n/config";
 import { getCurrentUser } from "@/lib/auth/session";
@@ -63,6 +64,25 @@ export default async function AdminPage({
         </div>
       </dl>
 
+      <div className="mt-4 flex flex-wrap gap-2">
+        {hasPermission(user.role, "content.create") ? (
+          <Link
+            href={`/${safeLocale}/admin/articles/new`}
+            className="rounded-md bg-brand px-3 py-2 text-sm font-semibold text-brand-contrast hover:bg-brand-strong"
+          >
+            New article
+          </Link>
+        ) : null}
+        {hasPermission(user.role, "media.manage_video") ? (
+          <Link
+            href={`/${safeLocale}/admin/videos`}
+            className="rounded-md border border-border px-3 py-2 text-sm font-medium hover:bg-surface-raised"
+          >
+            Manage videos
+          </Link>
+        ) : null}
+      </div>
+
       {!canSeeQueue ? (
         <p className="mt-6 rounded-lg border border-dashed border-border bg-surface p-4 text-sm text-ink-muted">
           Your role has no editorial permissions, so no content queue is
@@ -85,8 +105,9 @@ export default async function AdminPage({
       )}
 
       <p className="mt-8 text-sm text-ink-muted">
-        Media, adverts and newsletter management arrive later in Phase 9.
-        Every action here is role-gated and audit-logged.
+        Articles and vlog episodes are editable here. Adverts and newsletter
+        management arrive later in Phase 9. Every action is role-gated and
+        audit-logged.
       </p>
     </div>
   );

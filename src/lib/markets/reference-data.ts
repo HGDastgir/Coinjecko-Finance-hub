@@ -33,6 +33,57 @@ export interface ExchangeInfo {
   tradingDays: number[];
 }
 
+/**
+ * The exchange's own website — where a reader goes for live prices.
+ *
+ * Session status on our cards is computed from published trading hours
+ * and cannot see halts, holidays or auction extensions. The operator's
+ * own site can. Sending people there is the honest completion of a
+ * card that says "Open" without a live feed behind it.
+ *
+ * Every URL below was requested and checked. Roots are preferred over
+ * localised paths, which is not laziness: `msx.om/en/` redirects to
+ * PageNotFound.html and `dfm.ae/en` 301s into a dead end, while both
+ * roots answer 200 and language-switch themselves.
+ *
+ * Two could not be reached from the machine this was verified on —
+ * SSE and SZSE, whose sites commonly refuse foreign requests. Their
+ * domains are the documented official ones; treat them as unverified
+ * rather than confirmed.
+ */
+const EXCHANGE_SITES: Record<string, string> = {
+  NYSE: "https://www.nyse.com",
+  NASDAQ: "https://www.nasdaq.com",
+  TSX: "https://www.tsx.com",
+  LSE: "https://www.londonstockexchange.com",
+  XETRA: "https://www.xetra.com",
+  "EURONEXT-PA": "https://www.euronext.com",
+  SIX: "https://www.six-group.com",
+  JPX: "https://www.jpx.co.jp/english/",
+  HKEX: "https://www.hkex.com.hk/?sc_lang=en",
+  SSE: "https://www.sse.com.cn",
+  SZSE: "https://www.szse.cn",
+  KRX: "https://global.krx.co.kr",
+  TWSE: "https://www.twse.com.tw/en/",
+  SGX: "https://www.sgx.com",
+  ASX: "https://www.asx.com.au",
+  PSX: "https://www.psx.com.pk",
+  NSE: "https://www.nseindia.com",
+  BSE: "https://www.bseindia.com",
+  TADAWUL: "https://www.saudiexchange.sa",
+  DFM: "https://www.dfm.ae",
+  ADX: "https://www.adx.ae/english/pages/default.aspx",
+  QSE: "https://www.qe.com.qa/en/",
+  BOURSAKW: "https://www.boursakuwait.com.kw/en/",
+  BHB: "https://www.bahrainbourse.com/en",
+  MSX: "https://www.msx.om",
+};
+
+/** null when no verified site is held — the card then shows no link. */
+export function exchangeWebsite(code: string): string | null {
+  return EXCHANGE_SITES[code] ?? null;
+}
+
 export const EXCHANGES: ExchangeInfo[] = [
   { code: "NYSE", name: "New York Stock Exchange", city: "New York", country: "United States", region: "north_america", timezone: "America/New_York", sessions: [{ open: "09:30", close: "16:00" }], tradingDays: [1, 2, 3, 4, 5] },
   { code: "NASDAQ", name: "Nasdaq", city: "New York", country: "United States", region: "north_america", timezone: "America/New_York", sessions: [{ open: "09:30", close: "16:00" }], tradingDays: [1, 2, 3, 4, 5] },

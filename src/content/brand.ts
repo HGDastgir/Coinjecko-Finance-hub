@@ -21,15 +21,38 @@ const CANDIDATES = [
   "brand/coinjecko-logo.jpg",
 ] as const;
 
-export interface BrandLogo {
+/**
+ * The wide marketing banner, used as the header poster. Raster first
+ * here: the banner is photographic artwork, so webp/png is what it
+ * will realistically be — unlike the mark, which benefits from SVG.
+ */
+const BANNER_CANDIDATES = [
+  "brand/coinjecko-banner.webp",
+  "brand/coinjecko-banner.png",
+  "brand/coinjecko-banner.jpg",
+  "brand/coinjecko-banner.svg",
+] as const;
+
+export interface BrandAsset {
   /** Public URL path, e.g. /brand/coinjecko-logo.png */
   src: string;
 }
 
-export function brandLogo(): BrandLogo | null {
-  for (const relative of CANDIDATES) {
+/** Kept as its own name for the existing header import. */
+export type BrandLogo = BrandAsset;
+
+function firstOnDisk(candidates: readonly string[]): BrandAsset | null {
+  for (const relative of candidates) {
     const onDisk = path.join(process.cwd(), "public", relative);
     if (existsSync(onDisk)) return { src: `/${relative}` };
   }
   return null;
+}
+
+export function brandLogo(): BrandAsset | null {
+  return firstOnDisk(CANDIDATES);
+}
+
+export function brandBanner(): BrandAsset | null {
+  return firstOnDisk(BANNER_CANDIDATES);
 }

@@ -29,6 +29,54 @@ export interface RecurringEvent {
   description: string;
 }
 
+/**
+ * Where each publisher actually publishes.
+ *
+ * The guide tells a reader which institution releases a number; naming
+ * the source without a way to reach it is half an answer. These are
+ * the primary sources — the statistics office or central bank itself,
+ * never a data aggregator republishing them.
+ *
+ * Every URL here was checked to resolve. Deep links are used only
+ * where the page is a stable landing page for the release (the FOMC
+ * calendar, the SBP monetary-policy index); everywhere else this
+ * points at the institution's root, because a deep link that rots
+ * into a 404 is worse than one extra click. The Bank of England's
+ * monetary-policy summary path was dropped for exactly that reason.
+ *
+ * Keyed by the `publisher` string on each event, so the two must stay
+ * in step — `publisherUrl()` returns null rather than guessing, and
+ * the UI then renders plain text as before.
+ */
+const PUBLISHER_SITES: Record<string, string> = {
+  "State Bank of Pakistan": "https://www.sbp.org.pk/m_policy/index.asp",
+  "Pakistan Bureau of Statistics": "https://www.pbs.gov.pk",
+  "International Monetary Fund": "https://www.imf.org",
+  "Reserve Bank of India": "https://www.rbi.org.in",
+  "Ministry of Statistics (MoSPI)": "https://mospi.gov.in",
+  "US Federal Reserve":
+    "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+  "US Bureau of Labor Statistics": "https://www.bls.gov",
+  "US Bureau of Economic Analysis": "https://www.bea.gov",
+  "European Central Bank":
+    "https://www.ecb.europa.eu/press/pr/date/html/index.en.html",
+  Eurostat: "https://ec.europa.eu/eurostat",
+  "Bank of England": "https://www.bankofengland.co.uk/monetary-policy",
+  "UK Office for National Statistics": "https://www.ons.gov.uk",
+  "Bank of Japan": "https://www.boj.or.jp/en/",
+  "National Bureau of Statistics of China": "https://www.stats.gov.cn",
+  "OPEC and allied producers": "https://www.opec.org",
+  "Saudi Central Bank (SAMA) follows the US Federal Reserve":
+    "https://www.sama.gov.sa/en-US",
+  "Central Bank of the UAE follows the US Federal Reserve":
+    "https://www.centralbank.ae/en/",
+};
+
+/** null when we hold no verified URL — the UI then shows plain text. */
+export function publisherUrl(publisher: string): string | null {
+  return PUBLISHER_SITES[publisher] ?? null;
+}
+
 export const CALENDAR_COUNTRIES: { code: string; nameEn: string }[] = [
   { code: "PK", nameEn: "Pakistan" },
   { code: "IN", nameEn: "India" },

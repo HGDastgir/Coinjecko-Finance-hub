@@ -2,7 +2,10 @@ import Link from "next/link";
 import type { ExchangeStatus } from "@/lib/markets/exchange-status";
 import type { Dictionary } from "@/i18n/get-dictionary";
 import type { Locale } from "@/i18n/config";
-import { primaryIndexForExchange } from "@/lib/markets/reference-data";
+import {
+  exchangeWebsite,
+  primaryIndexForExchange,
+} from "@/lib/markets/reference-data";
 
 export function tradingWeekLabel(
   tradingDays: number[],
@@ -79,23 +82,44 @@ export function ExchangeStatusCard({
     </>
   );
 
-  if (!index) {
-    return (
-      <div className="rounded-lg border border-border bg-surface p-4">
-        {body}
-      </div>
-    );
-  }
+  /**
+   * The operator's own site. Our status line is derived from published
+   * trading hours and cannot see halts, holidays or auction
+   * extensions — the exchange can, so this is where a reader goes for
+   * what is actually happening right now.
+   *
+   * It sits OUTSIDE the index Link: an anchor nested inside another
+   * anchor is invalid, and browsers resolve it unpredictably.
+   */
+  const website = exchangeWebsite(exchange.code);
+
+  const officialLink = website ? (
+    <a
+      href={website}
+      target="_blank"
+      rel="nofollow noopener noreferrer"
+      className="mt-3 block text-xs text-ink-muted underline decoration-dotted underline-offset-2 hover:text-brand"
+    >
+      {m.exchangeSite} ↗
+    </a>
+  ) : null;
 
   return (
-    <Link
-      href={`/${locale}/markets/${index.slug}`}
-      className="block rounded-lg border border-border bg-surface p-4 transition-colors hover:border-brand"
-    >
-      {body}
-      <span className="mt-3 block text-xs font-medium text-brand">
-        {index.name} →
-      </span>
-    </Link>
+    <div className="rounded-lg border border-border bg-surface p-4 transition-colors focus-within:border-brand hover:border-brand">
+      {index ? (
+        <Link
+          href={`/${locale}/markets/${index.slug}`}
+          className="block"
+        >
+          {body}
+          <span className="mt-3 block text-xs font-medium text-brand">
+            {index.name} →
+          </span>
+        </Link>
+      ) : (
+        body
+      )}
+      {officialLink}
+    </div>
   );
 }

@@ -31,6 +31,8 @@ export interface GuideItem {
   countryCode: string;
   title: string;
   publisher: string;
+  /** Primary source. Null when no verified URL is held. */
+  publisherUrl: string | null;
   cadence: string;
   importance: "high" | "medium" | "low";
   description: string;
@@ -246,7 +248,23 @@ export function EconomicCalendar({
             <dl className="mt-2 flex flex-wrap gap-x-6 gap-y-1 font-latin text-xs text-ink-muted">
               <div className="flex gap-1">
                 <dt>{labels.publisher}:</dt>
-                <dd>{item.publisher}</dd>
+                <dd>
+                  {/* Links out to the primary source. nofollow +
+                      noreferrer: these are citations, not endorsements,
+                      and the destination has no need for our URL. */}
+                  {item.publisherUrl ? (
+                    <a
+                      href={item.publisherUrl}
+                      target="_blank"
+                      rel="nofollow noopener noreferrer"
+                      className="underline decoration-dotted underline-offset-2 hover:text-brand"
+                    >
+                      {item.publisher} ↗
+                    </a>
+                  ) : (
+                    item.publisher
+                  )}
+                </dd>
               </div>
               <div className="flex gap-1">
                 <dt>{labels.cadence}:</dt>

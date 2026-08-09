@@ -39,6 +39,10 @@ const serverSchema = z.object({
   MARKET_DATA_API_KEY: z.string().min(1).optional(),
   CRYPTO_DATA_API_KEY: z.string().min(1).optional(),
   FOREX_DATA_API_KEY: z.string().min(1).optional(),
+  // U.S. Energy Information Administration key (free, self-service).
+  // Without it the Brent and WTI benchmarks stay gated — see
+  // src/lib/markets/commodity-prices.ts.
+  COMMODITY_DATA_API_KEY: z.string().min(1).optional(),
   ECONOMIC_CALENDAR_API_KEY: z.string().min(1).optional(),
   UPSTASH_REDIS_REST_URL: z.string().url().optional(),
   UPSTASH_REDIS_REST_TOKEN: z.string().min(1).optional(),
