@@ -1,6 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import {
+  revalidateArticleSurfaces,
+  revalidateEveryPage,
+} from "@/lib/content/revalidate";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { requireUser, AuthorizationError } from "@/lib/auth/session";
@@ -325,11 +329,12 @@ export async function saveArticle(
   });
 
   revalidatePath(`/${uiLocale}/admin`);
-  for (const locale of locales) {
-    revalidatePath(`/${locale}/blog`);
-    const row = collected.rows.find((r) => r.locale === locale);
-    if (row) revalidatePath(`/${locale}/blog/${row.slug}`);
-  }
+  revalidateArticleSurfaces(
+    Object.fromEntries(collected.rows.map((r) => [r.locale, r.slug])),
+  );
+  // Breaking news is rendered by the layout, so it is present in the
+  // cached HTML of every page — not only the ones that list articles.
+  if (articleType === "breaking_news") revalidateEveryPage();
 
   // A newly created article has no edit URL until now, so send the
   // author to it rather than leaving them on an empty create form.

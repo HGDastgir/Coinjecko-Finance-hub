@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { revalidateEveryPage } from "@/lib/content/revalidate";
 import { headers } from "next/headers";
 import { requireUser, AuthorizationError } from "@/lib/auth/session";
 import { getArticleForTransition } from "@/lib/content/articles";
@@ -103,5 +104,10 @@ export async function transitionArticle(
   });
 
   revalidatePath(`/${locale}/admin`);
+  // A status change moves an article on or off the public site, and
+  // if it is breaking news it changes the strip on every page. This
+  // used to refresh only /admin, so a piece published from the queue
+  // stayed invisible to readers until each page expired on its own.
+  revalidateEveryPage();
   return { ok: true, message: `Moved to ${target}.` };
 }
