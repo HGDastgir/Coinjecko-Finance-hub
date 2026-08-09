@@ -260,9 +260,30 @@ function servableStale(now: number): CryptoMarketData | null {
 const MARKET_PAGE_SIZE = 250;
 
 async function requestMarkets(): Promise<CryptoMarketData | null> {
-  const url =
-    `${ENDPOINT}?vs_currency=usd&order=market_cap_desc` +
-    `&per_page=${MARKET_PAGE_SIZE}&page=1&price_change_percentage=24h&sparkline=true`;
+  /**
+   * Built with URLSearchParams rather than concatenated template
+   * literals, and not for tidiness.
+   *
+   * The previous form — `${ENDPOINT}?vs_currency=usd&order=…` +
+   * `&per_page=…` — compiled to a URL with the entire first query
+   * segment missing: the bundler folded the two literals and dropped
+   * the static tail of the first, emitting
+   * `…/coins/markets&per_page=250&…`. CoinGecko read that as a
+   * single-coin lookup and answered 404 "coin not found", so every
+   * crypto surface went dark in production while the source read
+   * correctly and worked from a laptop.
+   *
+   * One expression, no adjacent literals to fold, and the encoding is
+   * the standard library's problem rather than ours.
+   */
+  const url = `${ENDPOINT}?${new URLSearchParams({
+    vs_currency: "usd",
+    order: "market_cap_desc",
+    per_page: String(MARKET_PAGE_SIZE),
+    page: "1",
+    price_change_percentage: "24h",
+    sparkline: "true",
+  })}`;
 
   // The free tier needs no key; a demo key raises the rate limit when
   // one is configured. Never exposed to the browser.
@@ -280,7 +301,25 @@ async function requestMarkets(): Promise<CryptoMarketData | null> {
     });
 
     if (!response.ok) {
-      logger.warn("crypto_market.upstream_error", { status: response.status });
+      // The status alone is not enough to act on. CoinGecko's keyless
+      // public API answers 404 — not 403 — to requests from cloud
+      // provider address ranges, so a deployed instance sees "not
+      // found" for a URL that works from a laptop. Their body says
+      // which it is, so a short prefix of it is carried into the log.
+      // Truncated because an upstream error page can be a full HTML
+      // document, and no key is ever echoed back in it.
+      const detail = await response
+        .text()
+        .then((body) => body.slice(0, 200))
+        .catch(() => "");
+      logger.warn("crypto_market.upstream_error", {
+        status: response.status,
+        keyed: Boolean(apiKey),
+        // The key travels as a header, never in the query string, so
+        // logging the URL cannot leak it.
+        url,
+        detail,
+      });
       if (response.status === 429) cooldownUntil = Date.now() + COOLDOWN_MS;
       return null;
     }
