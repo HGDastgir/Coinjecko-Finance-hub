@@ -47,6 +47,9 @@ function buildCsp(nonce: string, mode: "strict-nonce" | "static-site") {
     mode,
     connectOrigins,
     imageOrigins,
+    // Ads exist only when a publisher id is configured, so the policy
+    // widens for exactly the deployments that serve them.
+    adsEnabled: Boolean(publicEnv.NEXT_PUBLIC_ADSENSE_CLIENT),
   });
 }
 

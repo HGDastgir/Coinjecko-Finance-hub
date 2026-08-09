@@ -25,6 +25,14 @@ const publicSchema = z.object({
     .string()
     .regex(/^ca-pub-\d+$/)
     .optional(),
+  // A responsive display unit id from the same AdSense account. With
+  // the client set but no slot, the placements render as labelled
+  // reserved space and no Google request is made for a creative —
+  // useful for seeing and selling the inventory before ads are live.
+  NEXT_PUBLIC_ADSENSE_SLOT: z
+    .string()
+    .regex(/^\d+$/)
+    .optional(),
 });
 
 export const publicEnv = publicSchema.parse({
@@ -32,6 +40,7 @@ export const publicEnv = publicSchema.parse({
   NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
   NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   NEXT_PUBLIC_ADSENSE_CLIENT: process.env.NEXT_PUBLIC_ADSENSE_CLIENT,
+  NEXT_PUBLIC_ADSENSE_SLOT: process.env.NEXT_PUBLIC_ADSENSE_SLOT,
 });
 
 const serverSchema = z.object({

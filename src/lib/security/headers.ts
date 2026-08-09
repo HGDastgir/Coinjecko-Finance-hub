@@ -45,7 +45,53 @@ export interface CspOptions {
    * host, or images fail in one direction or the other.
    */
   imageOrigins?: string[];
+  /**
+   * Widen the policy for Google AdSense. Off unless an AdSense client
+   * is configured, so a site with no ads keeps the tighter policy —
+   * the allow-list below is substantial (script, frames, images and
+   * beacons to Google's ad network) and should only exist where it is
+   * actually earning its keep.
+   */
+  adsEnabled?: boolean;
 }
+
+/**
+ * Origins AdSense needs. Ads are served by a chain of Google hosts and
+ * every one of them has to be named: the loader comes from
+ * googlesyndication, creatives are framed from doubleclick and
+ * googlesyndication, and impression beacons go to google.com.
+ *
+ * This is the largest single widening of the policy in the app, which
+ * is why it is gated behind a flag rather than always present.
+ */
+const ADSENSE = {
+  script: [
+    "https://pagead2.googlesyndication.com",
+    "https://partner.googleadservices.com",
+    "https://tpc.googlesyndication.com",
+    "https://www.googletagservices.com",
+    "https://adservice.google.com",
+  ],
+  frame: [
+    "https://googleads.g.doubleclick.net",
+    "https://tpc.googlesyndication.com",
+    "https://www.google.com",
+  ],
+  image: [
+    "https://pagead2.googlesyndication.com",
+    "https://googleads.g.doubleclick.net",
+    "https://tpc.googlesyndication.com",
+    "https://www.google.com",
+    "https://www.gstatic.com",
+  ],
+  connect: [
+    "https://pagead2.googlesyndication.com",
+    "https://googleads.g.doubleclick.net",
+    "https://www.google.com",
+    "https://ep1.adtrafficquality.google",
+    "https://ep2.adtrafficquality.google",
+  ],
+} as const;
 
 export function buildContentSecurityPolicy({
   nonce,
@@ -53,13 +99,24 @@ export function buildContentSecurityPolicy({
   mode,
   connectOrigins = [],
   imageOrigins = [],
+  adsEnabled = false,
 }: CspOptions): string {
-  const connect = [SELF, ...connectOrigins].join(" ");
+  const connect = [
+    SELF,
+    ...connectOrigins,
+    ...(adsEnabled ? ADSENSE.connect : []),
+  ].join(" ");
+
+  // Ad scripts are only ever allowed on the public tier. The admin
+  // tier keeps its strict nonce policy with no third-party script at
+  // all — there are no ads behind the sign-in wall, and the surface
+  // that edits content is the last place to widen script-src.
+  const adScript = adsEnabled && mode === "static-site" ? ADSENSE.script : [];
 
   const scriptSrc =
     mode === "strict-nonce"
       ? `script-src ${SELF} 'nonce-${nonce}' 'strict-dynamic'${isDev ? " 'unsafe-eval'" : ""}`
-      : `script-src ${SELF} 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`;
+      : `script-src ${[SELF, "'unsafe-inline'", ...adScript].join(" ")}${isDev ? " 'unsafe-eval'" : ""}`;
 
   const directives = [
     `default-src ${SELF}`,
@@ -68,7 +125,7 @@ export function buildContentSecurityPolicy({
     // Coin logos from CoinGecko's image CDN. Must stay in step with
     // `remotePatterns` in next.config.ts — Next's optimiser and the CSP
     // are two independent gates and both have to allow the host.
-    `img-src ${[SELF, "data:", "blob:", "https://coin-images.coingecko.com", ...imageOrigins].join(" ")}`,
+    `img-src ${[SELF, "data:", "blob:", "https://coin-images.coingecko.com", ...imageOrigins, ...(adsEnabled ? ADSENSE.image : [])].join(" ")}`,
     `font-src ${SELF}`,
     `connect-src ${connect}${isDev ? " ws:" : ""}`,
     `media-src ${SELF}`,
@@ -77,7 +134,7 @@ export function buildContentSecurityPolicy({
     // youtube.com host is deliberately NOT allowed to frame us. Paired
     // with resolveVideoSource() in src/lib/content/video-embed.ts,
     // which is the only place that builds one of these URLs.
-    `frame-src ${SELF} https://www.youtube-nocookie.com`,
+    `frame-src ${[SELF, "https://www.youtube-nocookie.com", ...(adsEnabled ? ADSENSE.frame : [])].join(" ")}`,
     `object-src 'none'`,
     `base-uri ${SELF}`,
     `form-action ${SELF}`,

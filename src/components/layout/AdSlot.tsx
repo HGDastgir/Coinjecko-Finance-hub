@@ -1,4 +1,5 @@
 import { publicEnv } from "@/lib/env";
+import { AdUnit } from "@/components/layout/AdUnit";
 import {
   AD_PLACEMENTS,
   type AdFormat,
@@ -27,12 +28,17 @@ import {
  * comes from the placement, so one position cannot quietly reserve
  * different space on different pages.
  *
- * ENABLING ADSENSE also needs a CSP change in
- * src/lib/security/headers.ts — script-src, img-src and frame-src for
- * googlesyndication/doubleclick — plus the loader script in the
- * layout. Both are deliberately left undone: adding those origins
- * widens the policy materially and should be a considered decision,
- * not a side effect of adding a placeholder.
+ * THREE STATES, driven by configuration:
+ *
+ * 1. No NEXT_PUBLIC_ADSENSE_CLIENT — renders nothing. A site with no
+ *    ads makes no Google request and keeps the tighter CSP.
+ * 2. Client but no NEXT_PUBLIC_ADSENSE_SLOT — renders labelled,
+ *    correctly sized reserved space with no creative. This is the
+ *    state for seeing and selling inventory before ads go live.
+ * 3. Client and slot — renders a real AdSense unit.
+ *
+ * The CSP widens for Google's ad network in step with state 1 → 2/3;
+ * see the ADSENSE block in src/lib/security/headers.ts.
  */
 
 /** Reserved heights, matched to the standard IAB units. */
@@ -52,6 +58,7 @@ export function AdSlot({
 }) {
   const client = publicEnv.NEXT_PUBLIC_ADSENSE_CLIENT;
   if (!client) return null;
+  const slotId = publicEnv.NEXT_PUBLIC_ADSENSE_SLOT;
 
   return (
     <aside
@@ -65,8 +72,11 @@ export function AdSlot({
       <div
         className={`flex w-full items-center justify-center rounded-lg border border-border bg-surface ${RESERVED[AD_PLACEMENTS[placement]]}`}
       >
-        {/* The <ins class="adsbygoogle"> element and its loader land
-            here once the CSP entries above are added. */}
+        {slotId ? (
+          <AdUnit client={client} slotId={slotId} />
+        ) : (
+          <span className="text-xs text-ink-muted">{placement}</span>
+        )}
       </div>
     </aside>
   );

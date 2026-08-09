@@ -23,6 +23,7 @@ import { getDictionary } from "@/i18n/get-dictionary";
 import { CryptoTicker } from "@/components/markets/CryptoTicker";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { AdSenseLoader } from "@/components/layout/AdSenseLoader";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 import {
   organizationSchema,
@@ -86,6 +87,7 @@ export default async function LocaleLayout({
           {children}
         </main>
         <Footer locale={locale} dict={dict} />
+        <AdSenseLoader />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

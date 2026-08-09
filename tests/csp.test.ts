@@ -153,3 +153,69 @@ test("nonces are unpredictable and not reused", () => {
     assert.ok(Buffer.from(nonce, "base64").length >= 16);
   }
 });
+
+/**
+ * AdSense widens the policy more than anything else in the app, so the
+ * conditions under which it does are worth pinning down.
+ */
+test("ad origins are absent unless ads are enabled", () => {
+  for (const mode of ["strict-nonce", "static-site"] as const) {
+    const policy = buildContentSecurityPolicy({
+      nonce: NONCE,
+      isDev: false,
+      mode,
+    });
+    assert.ok(
+      !policy.includes("googlesyndication"),
+      `${mode} allowed an ad origin with ads disabled`,
+    );
+    assert.ok(!policy.includes("doubleclick"));
+  }
+});
+
+test("ad script is allowed on the public tier only", () => {
+  const publicTier = directives(
+    buildContentSecurityPolicy({
+      nonce: NONCE,
+      isDev: false,
+      mode: "static-site",
+      adsEnabled: true,
+    }),
+  );
+  assert.ok(
+    (publicTier.get("script-src") ?? "").includes(
+      "https://pagead2.googlesyndication.com",
+    ),
+    "public pages must be able to load the ad script",
+  );
+
+  // The admin tier keeps its nonce policy: no third-party script
+  // behind the sign-in wall, ads configured or not.
+  const adminTier = directives(
+    buildContentSecurityPolicy({
+      nonce: NONCE,
+      isDev: false,
+      mode: "strict-nonce",
+      adsEnabled: true,
+    }),
+  );
+  assert.ok(
+    !(adminTier.get("script-src") ?? "").includes("googlesyndication"),
+    "the admin tier must never allow third-party ad script",
+  );
+});
+
+test("enabling ads does not weaken the injection floor", () => {
+  const parsed = directives(
+    buildContentSecurityPolicy({
+      nonce: NONCE,
+      isDev: false,
+      mode: "static-site",
+      adsEnabled: true,
+    }),
+  );
+  assert.equal(parsed.get("object-src"), "'none'");
+  assert.equal(parsed.get("frame-ancestors"), "'none'");
+  assert.equal(parsed.get("base-uri"), "'self'");
+  assert.equal(parsed.get("form-action"), "'self'");
+});
