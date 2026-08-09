@@ -23,6 +23,15 @@ const FIELD =
   "mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm";
 const LABEL = "block text-xs font-medium text-ink-muted";
 
+/** Title → URL slug, matching the check constraint in migration 0002. */
+function slugify(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 120);
+}
+
 export function VideoEditor({
   locale,
   video,
@@ -37,6 +46,17 @@ export function VideoEditor({
 
   // Defaults to upload for new episodes: picking a file is the
   // common case now, and typing a path is the exception.
+  // Title and slug are CONTROLLED, unlike the rest of the form.
+  // useActionState re-renders on a failed submit, and an uncontrolled
+  // input can lose what was typed — which is unforgivable here, where
+  // the editor may have just waited out a 200 MB upload to reach the
+  // error.
+  const [title, setTitle] = useState(video?.title ?? "");
+  const [slug, setSlug] = useState(video?.slug ?? "");
+  // Once someone edits the slug by hand it stops tracking the title,
+  // so a deliberate URL is never silently overwritten.
+  const [slugTouched, setSlugTouched] = useState(Boolean(video?.slug));
+
   const [provider, setProvider] = useState(video?.provider || "upload");
   const [uploaded, setUploaded] = useState<UploadedVideo | null>(null);
 
@@ -53,8 +73,13 @@ export function VideoEditor({
           id="title"
           name="title"
           type="text"
+          required
           maxLength={300}
-          defaultValue={video?.title ?? ""}
+          value={title}
+          onChange={(event) => {
+            setTitle(event.target.value);
+            if (!slugTouched) setSlug(slugify(event.target.value));
+          }}
           className={FIELD}
         />
       </div>
@@ -69,9 +94,14 @@ export function VideoEditor({
             name="slug"
             type="text"
             dir="ltr"
+            required
             pattern="[a-z0-9-]+"
             maxLength={120}
-            defaultValue={video?.slug ?? ""}
+            value={slug}
+            onChange={(event) => {
+              setSlugTouched(true);
+              setSlug(event.target.value);
+            }}
             className={`${FIELD} font-latin`}
           />
         </div>

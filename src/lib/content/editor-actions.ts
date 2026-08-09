@@ -397,6 +397,10 @@ export async function saveVideo(
       : "en";
 
   if (!title) return { ok: false, message: "A video needs a title." };
+  // Distinguish missing from malformed: "may contain only lowercase
+  // letters" is a baffling thing to be told about a field you left
+  // blank, and that is exactly what an empty slug used to report.
+  if (!slug) return { ok: false, message: "A video needs a slug for its URL." };
   if (!SLUG.test(slug)) {
     return {
       ok: false,
