@@ -3,7 +3,6 @@ import Link from "next/link";
 import { brandLogo } from "@/content/brand";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/get-dictionary";
-import { BreakingNewsBar } from "./BreakingNewsBar";
 import { HeaderPoster } from "./HeaderPoster";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 
@@ -20,6 +19,12 @@ const NAV_ITEMS: {
   dot: string;
   hover: string;
 }[] = [
+  {
+    key: "breakingNews",
+    path: "/breaking-news",
+    dot: "bg-down",
+    hover: "hover:text-down",
+  },
   {
     key: "markets",
     path: "/markets",
@@ -49,18 +54,6 @@ const NAV_ITEMS: {
     path: "/economy",
     dot: "bg-sect-economy",
     hover: "hover:text-sect-economy",
-  },
-  {
-    key: "business",
-    path: "/business",
-    dot: "bg-sect-business",
-    hover: "hover:text-sect-business",
-  },
-  {
-    key: "personalFinance",
-    path: "/personal-finance",
-    dot: "bg-sect-personal",
-    hover: "hover:text-sect-personal",
   },
   {
     key: "blog",
@@ -126,7 +119,6 @@ export function Header({
         </Link>
       </div>
       <div className="spectrum-bar" aria-hidden="true" />
-      <BreakingNewsBar locale={locale} dict={dict} />
       <nav aria-label={dict.a11y.mainNavigation}>
         <ul className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 py-1">
           {NAV_ITEMS.map(({ key, path, dot, hover }) => (

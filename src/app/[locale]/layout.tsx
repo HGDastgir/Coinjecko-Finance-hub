@@ -22,6 +22,7 @@ import {
 import { getDictionary } from "@/i18n/get-dictionary";
 import { CryptoTicker } from "@/components/markets/CryptoTicker";
 import { Header } from "@/components/layout/Header";
+import { BreakingNewsBar } from "@/components/layout/BreakingNewsBar";
 import { Footer } from "@/components/layout/Footer";
 import { AdSenseLoader } from "@/components/layout/AdSenseLoader";
 import { buildPageMetadata } from "@/lib/seo/metadata";
@@ -81,6 +82,9 @@ export default async function LocaleLayout({
         <a href="#main-content" className="skip-link font-latin">
           {dict.a11y.skipToContent}
         </a>
+        {/* Above everything, including the price ticker: a
+            breaking headline outranks a price. */}
+        <BreakingNewsBar locale={locale} dict={dict} />
         <CryptoTicker locale={locale} labels={dict.ticker} />
         <Header locale={locale} dict={dict} />
         <main id="main-content" className="flex-1">

@@ -6,6 +6,7 @@
     "description": "A bilingual global market intelligence platform connecting financial news, live market data and practical money knowledge for emerging and international audiences."
   },
   "nav": {
+    "breakingNews": "Breaking News",
     "markets": "Markets",
     "crypto": "Crypto",
     "forex": "Forex",
@@ -232,9 +233,13 @@
     }
   },
   "breaking": {
-    "label": "Breaking",
+    "label": "Breaking news",
     "ariaLabel": "Breaking news headlines",
-    "seeAll": "All breaking news"
+    "seeAll": "All breaking news",
+    "title": "Breaking News",
+    "lead": "Developing stories as we publish them — every item with its author, its timestamp and its sources on the page.",
+    "gate": "The content backend is not connected, so no headlines can be listed. We show nothing here rather than placeholder news.",
+    "empty": "No breaking news has been published yet. Urgent stories appear here the moment the newsroom publishes them."
   },
   "blog": {
     "title": "Blogs",

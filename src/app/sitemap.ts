@@ -28,6 +28,7 @@ const STATIC_PATHS = [
   "/economy",
   "/business",
   "/personal-finance",
+  "/breaking-news",
   "/blog",
   "/vlogs",
   "/editorial-policy",

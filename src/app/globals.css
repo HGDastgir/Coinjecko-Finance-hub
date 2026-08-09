@@ -215,6 +215,14 @@ html[dir="rtl"] .spectrum-bar {
 }
 
 /* Under RTL the strip travels the other way, with the reading order. */
+/* The breaking strip reuses the ticker mechanics but runs faster:
+   headlines are longer than price chips, so the same duration would
+   crawl. Everything else — hover/focus pause, RTL direction, the
+   reduced-motion fallback — is inherited from .ticker above. */
+.ticker-breaking .ticker-track {
+  animation-duration: 45s;
+}
+
 html[dir="rtl"] .ticker-track {
   animation-name: ticker-scroll-rtl;
 }
