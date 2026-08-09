@@ -5,7 +5,6 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { requireUser, AuthorizationError } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/auth/permissions";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getEditableVideo } from "@/lib/content/admin-content";
 import { writeAuditEvent } from "@/lib/audit";
@@ -28,9 +27,18 @@ import {
  * our server with the file. Instead it asks this action for a ticket;
  * the action authenticates the caller, checks media.manage_video,
  * validates the declared filename/type/size, generates the object key
- * itself, and asks Storage — with the service-role key, server-side —
- * for a short-lived signed upload URL scoped to that single key. The
- * browser then PUTs the bytes straight to Storage.
+ * itself, and asks Storage — server-side — for a short-lived signed
+ * upload URL scoped to that single key. The browser then PUTs the
+ * bytes straight to Storage.
+ *
+ * The ticket is minted with the caller's OWN session, not the
+ * service-role key. That is deliberate and stronger: the storage
+ * policies from migration 0009 apply to the request that creates the
+ * URL, so a caller who somehow got past the permission check above
+ * would still be refused by the database. Using a key that bypasses
+ * RLS would have made this action the only thing standing between a
+ * bug and the bucket. It also means uploads need no extra secret to
+ * be configured.
  *
  * That gets three things at once: the file never passes through a
  * serverless function (which caps request bodies at a few megabytes
@@ -94,8 +102,8 @@ export async function createVideoUploadTicket(
   const path = buildVideoStoragePath(extensionOf(filename), randomUUID());
 
   try {
-    const admin = createSupabaseAdminClient();
-    const { data, error } = await admin.storage
+    const supabase = await createSupabaseServerClient();
+    const { data, error } = await supabase.storage
       .from(VIDEO_BUCKET)
       .createSignedUploadUrl(path);
 
@@ -117,15 +125,12 @@ export async function createVideoUploadTicket(
 
     return { ok: true, path, uploadUrl: data.signedUrl };
   } catch (err) {
-    // Most often a missing SUPABASE_SERVICE_ROLE_KEY, which is worth
-    // saying plainly rather than as a generic failure.
     logger.error("media.ticket_failed", {
       reason: err instanceof Error ? err.message : "unknown",
     });
     return {
       ok: false,
-      message:
-        "Uploads are unavailable: the server has no storage credentials configured.",
+      message: "Could not start the upload. Please try again.",
     };
   }
 }
@@ -177,8 +182,8 @@ export async function deleteVideoRecord(
 
   if (existing.storagePath) {
     try {
-      const admin = createSupabaseAdminClient();
-      const { error } = await admin.storage
+      const supabase = await createSupabaseServerClient();
+      const { error } = await supabase.storage
         .from(VIDEO_BUCKET)
         .remove([existing.storagePath]);
       if (error) {
