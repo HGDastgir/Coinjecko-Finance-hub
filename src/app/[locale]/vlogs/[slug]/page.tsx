@@ -11,7 +11,11 @@ import {
 } from "@/lib/seo/json-ld";
 import { publicEnv } from "@/lib/env";
 import { getVideoBySlug } from "@/lib/content/public-content";
-import { resolveVideoSource } from "@/lib/content/video-embed";
+import {
+  resolveUploadedVideo,
+  resolveVideoSource,
+} from "@/lib/content/video-embed";
+import { resolveImageSrc } from "@/lib/content/media";
 import {
   formatDuration,
   formatPublishedDate,
@@ -65,7 +69,16 @@ export default async function VlogPage({
   if (!video) notFound();
 
   const url = `${base}/${safeLocale}/vlogs/${video.slug}`;
-  const source = resolveVideoSource(video.provider, video.providerRef);
+  // An uploaded file resolves from its storage key; the other two
+  // sources keep the path they always had.
+  const source =
+    video.provider === "upload"
+      ? resolveUploadedVideo(video.storagePath, publicEnv.NEXT_PUBLIC_SUPABASE_URL)
+      : resolveVideoSource(video.provider, video.providerRef);
+  const poster = resolveImageSrc(
+    video.posterPath,
+    publicEnv.NEXT_PUBLIC_SUPABASE_URL,
+  );
   const date = formatPublishedDate(video.publishedAt, safeLocale);
   const duration = formatDuration(video.durationSeconds);
 
@@ -148,15 +161,33 @@ export default async function VlogPage({
             <p className="mt-2 text-xs text-ink-muted">{v.privacyNote}</p>
           </>
         ) : (
+          // Native controls give play/pause, volume, scrubbing,
+          // fullscreen and picture-in-picture on every platform,
+          // including mobile, for free — and they stay accessible and
+          // keyboard-operable without us reimplementing any of it.
+          //
+          // playsInline stops iOS hijacking playback into its
+          // fullscreen player, which is what makes the video behave
+          // like part of the page on a phone.
+          //
+          // preload="metadata" fetches only enough to show duration
+          // and the first frame: a 200 MB file must not be pulled down
+          // by anyone who merely opens the page.
+          //
           // Captions are attached per episode once the media pipeline
           // ships; the element carries no <track> yet rather than an
           // empty one that would claim captions exist.
           <video
             src={source.src}
+            poster={poster ?? undefined}
             controls
+            playsInline
             preload="metadata"
-            className="w-full rounded-lg border border-border"
-          />
+            controlsList="nodownload"
+            className="aspect-video w-full rounded-lg border border-border bg-black"
+          >
+            {v.playerUnavailable}
+          </video>
         )}
       </div>
 

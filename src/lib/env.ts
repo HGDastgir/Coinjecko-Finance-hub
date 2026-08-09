@@ -41,6 +41,7 @@ export const publicEnv = publicSchema.parse({
   NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   NEXT_PUBLIC_ADSENSE_CLIENT: process.env.NEXT_PUBLIC_ADSENSE_CLIENT,
   NEXT_PUBLIC_ADSENSE_SLOT: process.env.NEXT_PUBLIC_ADSENSE_SLOT,
+  NEXT_PUBLIC_VIDEO_MAX_UPLOAD_MB: process.env.NEXT_PUBLIC_VIDEO_MAX_UPLOAD_MB,
 });
 
 const serverSchema = z.object({

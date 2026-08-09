@@ -137,6 +137,11 @@ export interface EditableVideo {
   providerRef: string;
   isShort: boolean;
   durationSeconds: number | null;
+  storagePath: string;
+  originalFilename: string;
+  fileSizeBytes: number | null;
+  mimeType: string;
+  posterPath: string;
   createdBy: string;
   publishedAt: string | null;
   updatedAt: string | null;
@@ -153,6 +158,11 @@ interface VideoRow {
   provider_ref: string | null;
   is_short: boolean;
   duration_s: number | null;
+  storage_path: string | null;
+  original_filename: string | null;
+  file_size_bytes: number | null;
+  mime_type: string | null;
+  poster_path: string | null;
   created_by: string;
   published_at: string | null;
   updated_at: string | null;
@@ -160,7 +170,8 @@ interface VideoRow {
 
 const VIDEO_SELECT =
   "id,status,locale,title,slug,description,provider,provider_ref," +
-  "is_short,duration_s,created_by,published_at,updated_at";
+  "is_short,duration_s,storage_path,original_filename,file_size_bytes," +
+  "mime_type,poster_path,created_by,published_at,updated_at";
 
 function toEditableVideo(row: VideoRow): EditableVideo | null {
   if (!isContentStatus(row.status)) return null;
@@ -175,6 +186,11 @@ function toEditableVideo(row: VideoRow): EditableVideo | null {
     providerRef: row.provider_ref ?? "",
     isShort: row.is_short,
     durationSeconds: row.duration_s,
+    storagePath: row.storage_path ?? "",
+    originalFilename: row.original_filename ?? "",
+    fileSizeBytes: row.file_size_bytes,
+    mimeType: row.mime_type ?? "",
+    posterPath: row.poster_path ?? "",
     createdBy: row.created_by,
     publishedAt: row.published_at,
     updatedAt: row.updated_at,

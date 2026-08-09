@@ -6,6 +6,7 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/auth/permissions";
 import { listVideos } from "@/lib/content/admin-content";
 import { buildPageMetadata } from "@/lib/seo/metadata";
+import { VideoDeleteButton } from "@/components/admin/VideoDeleteButton";
 
 export const dynamic = "force-dynamic";
 
@@ -84,6 +85,11 @@ export default async function AdminVideosPage({
                   <span className="font-latin">
                     {video.provider || "no source"}
                   </span>
+                  {video.originalFilename ? (
+                    <span className="font-latin break-all">
+                      {video.originalFilename}
+                    </span>
+                  ) : null}
                   {video.isShort ? <span>short</span> : null}
                 </p>
               </div>
@@ -101,6 +107,12 @@ export default async function AdminVideosPage({
                 >
                   Edit
                 </Link>
+                <VideoDeleteButton
+                  videoId={video.id}
+                  locale={safeLocale}
+                  title={video.title}
+                  hasFile={Boolean(video.storagePath)}
+                />
               </div>
             </li>
           ))}

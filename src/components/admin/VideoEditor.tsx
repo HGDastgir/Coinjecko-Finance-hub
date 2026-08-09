@@ -1,7 +1,11 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { saveVideo, type SaveResult } from "@/lib/content/editor-actions";
+import {
+  VideoUploader,
+  type UploadedVideo,
+} from "@/components/admin/VideoUploader";
 import type { EditableVideo } from "@/lib/content/admin-content";
 import { locales, type Locale } from "@/i18n/config";
 
@@ -30,6 +34,11 @@ export function VideoEditor({
     SaveResult | null,
     FormData
   >(saveVideo, null);
+
+  // Defaults to upload for new episodes: picking a file is the
+  // common case now, and typing a path is the exception.
+  const [provider, setProvider] = useState(video?.provider || "upload");
+  const [uploaded, setUploaded] = useState<UploadedVideo | null>(null);
 
   return (
     <form action={formAction} className="mt-6 space-y-4">
@@ -111,30 +120,90 @@ export function VideoEditor({
           <select
             id="provider"
             name="provider"
-            defaultValue={video?.provider ?? "youtube"}
+            value={provider}
+            onChange={(event) => setProvider(event.target.value)}
             className={FIELD}
           >
+            <option value="upload">Upload from PC</option>
             <option value="youtube">YouTube</option>
             <option value="self_hosted">Self-hosted file</option>
           </select>
         </div>
 
-        <div>
-          <label className={LABEL} htmlFor="providerRef">
-            Reference — YouTube video id, or a path like
-            /media/episode-1.mp4
-          </label>
-          <input
-            id="providerRef"
-            name="providerRef"
-            type="text"
-            dir="ltr"
-            maxLength={300}
-            defaultValue={video?.providerRef ?? ""}
-            className={`${FIELD} font-latin`}
-          />
-        </div>
+        {/* The reference field is only meaningful for the two sources
+            that need a hand-typed value. An upload has no reference to
+            type — that is the point of it. */}
+        {provider === "upload" ? null : (
+          <div>
+            <label className={LABEL} htmlFor="providerRef">
+              {provider === "youtube"
+                ? "YouTube video id — the dQw4w9WgXcQ part of the URL"
+                : "Path on this site, e.g. /media/episode-1.mp4"}
+            </label>
+            <input
+              id="providerRef"
+              name="providerRef"
+              type="text"
+              dir="ltr"
+              maxLength={300}
+              defaultValue={video?.providerRef ?? ""}
+              className={`${FIELD} font-latin`}
+            />
+          </div>
+        )}
       </div>
+
+      {provider === "upload" ? (
+        <>
+          <VideoUploader
+            current={video?.storagePath ?? ""}
+            onUploaded={setUploaded}
+          />
+          {/* Carried as hidden fields so the save action records what
+              was actually stored, rather than trusting a path the
+              editor could have typed. Empty on edit-without-reupload,
+              which the action reads as "keep the existing file". */}
+          <input
+            type="hidden"
+            name="storagePath"
+            value={uploaded?.storagePath ?? ""}
+          />
+          <input
+            type="hidden"
+            name="originalFilename"
+            value={uploaded?.originalFilename ?? ""}
+          />
+          <input
+            type="hidden"
+            name="fileSizeBytes"
+            value={uploaded ? String(uploaded.sizeBytes) : ""}
+          />
+          <input
+            type="hidden"
+            name="mimeType"
+            value={uploaded?.mimeType ?? ""}
+          />
+
+          <div>
+            <label className={LABEL} htmlFor="posterPath">
+              Poster image path (optional) — shown before playback
+            </label>
+            <input
+              id="posterPath"
+              name="posterPath"
+              type="text"
+              dir="ltr"
+              maxLength={500}
+              defaultValue={video?.posterPath ?? ""}
+              className={`${FIELD} font-latin`}
+            />
+            <p className="mt-1 text-xs text-ink-muted">
+              An object key in the article-media bucket, or an https URL.
+              Without one the player shows the first frame.
+            </p>
+          </div>
+        </>
+      ) : null}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>

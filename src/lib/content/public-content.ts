@@ -269,6 +269,9 @@ export interface VideoSummary {
   providerRef: string | null;
   isShort: boolean;
   durationSeconds: number | null;
+  storagePath: string | null;
+  posterPath: string | null;
+  mimeType: string | null;
   publishedAt: string | null;
 }
 
@@ -281,11 +284,15 @@ interface VideoRow {
   provider_ref: string | null;
   is_short: boolean;
   duration_s: number | null;
+  storage_path: string | null;
+  poster_path: string | null;
+  mime_type: string | null;
   published_at: string | null;
 }
 
 const VIDEO_SELECT =
-  "id,title,slug,description,provider,provider_ref,is_short,duration_s,published_at";
+  "id,title,slug,description,provider,provider_ref,is_short,duration_s," +
+  "storage_path,poster_path,mime_type,published_at";
 
 function toVideo(row: VideoRow): VideoSummary {
   return {
@@ -297,6 +304,9 @@ function toVideo(row: VideoRow): VideoSummary {
     providerRef: row.provider_ref,
     isShort: row.is_short,
     durationSeconds: row.duration_s,
+    storagePath: row.storage_path,
+    posterPath: row.poster_path,
+    mimeType: row.mime_type,
     publishedAt: row.published_at,
   };
 }

@@ -349,7 +349,15 @@ export async function saveArticle(
 // Videos
 // ------------------------------------------------------------
 
-const VIDEO_PROVIDERS = ["youtube", "self_hosted"] as const;
+/**
+ * The object key shape buildVideoStoragePath() produces:
+ * YYYY-MM/<uuid>.<ext>. Accepting only this means a form cannot point
+ * a record at an arbitrary object or escape the bucket.
+ */
+const UPLOAD_KEY =
+  /^\d{4}-\d{2}\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.[a-z0-9]{2,5}$/;
+
+const VIDEO_PROVIDERS = ["youtube", "self_hosted", "upload"] as const;
 
 export async function saveVideo(
   _prevState: SaveResult | null,
@@ -404,8 +412,13 @@ export async function saveVideo(
   }
   // The public page refuses to render a reference it cannot validate,
   // so reject it at the point of entry instead of saving something
-  // that will silently never play.
-  if (provider && !resolveVideoSource(provider, providerRef)) {
+  // that will silently never play. 'upload' carries no reference — its
+  // source is the storage key, checked below.
+  if (
+    provider &&
+    provider !== "upload" &&
+    !resolveVideoSource(provider, providerRef)
+  ) {
     return {
       ok: false,
       message:
@@ -413,6 +426,39 @@ export async function saveVideo(
           ? "That does not look like a YouTube video id (letters, numbers, - and _ only)."
           : "A self-hosted reference must be a path on this site, e.g. /media/episode-1.mp4.",
     };
+  }
+
+  /**
+   * Upload metadata. The storage key is only accepted in the shape the
+   * server itself generates when issuing an upload ticket — an editor
+   * cannot point a record at an arbitrary object by editing the form,
+   * and cannot reach outside the bucket.
+   *
+   * An empty key while editing means "keep the file already attached",
+   * which is what lets someone fix a title without re-uploading 200 MB.
+   */
+  const uploadedPath = readString(formData, "storagePath", 400);
+  if (uploadedPath && !UPLOAD_KEY.test(uploadedPath)) {
+    return { ok: false, message: "That upload reference is not valid." };
+  }
+
+  const posterPath = readString(formData, "posterPath", 500);
+  if (posterPath && !isStorableImageRef(posterPath)) {
+    return {
+      ok: false,
+      message: "The poster must be an uploaded path or an https:// URL.",
+    };
+  }
+
+  const uploadedName = readString(formData, "originalFilename", 300);
+  const uploadedMime = readString(formData, "mimeType", 100);
+  const uploadedSizeRaw = readString(formData, "fileSizeBytes", 20);
+  const uploadedSize = uploadedSizeRaw ? Number(uploadedSizeRaw) : null;
+  if (
+    uploadedSize !== null &&
+    (!Number.isInteger(uploadedSize) || uploadedSize <= 0)
+  ) {
+    return { ok: false, message: "The reported file size is not valid." };
   }
 
   let durationSeconds: number | null = null;
@@ -435,10 +481,27 @@ export async function saveVideo(
     provider_ref: providerRef || null,
     is_short: isShort,
     duration_s: durationSeconds,
+    poster_path: posterPath || null,
     status: publish ? "published" : "draft",
     // videos have no workflow trigger, so the timestamp is set here.
     published_at: publish ? new Date().toISOString() : null,
   };
+
+  /**
+   * Only written when a new file was actually uploaded in this
+   * submission. Spread separately so an ordinary edit leaves the
+   * existing object and its metadata untouched rather than nulling
+   * them — a save must never orphan the file it is describing.
+   */
+  const uploadColumns = uploadedPath
+    ? {
+        storage_path: uploadedPath,
+        original_filename: uploadedName || null,
+        file_size_bytes: uploadedSize,
+        mime_type: uploadedMime || null,
+        uploaded_at: new Date().toISOString(),
+      }
+    : {};
 
   let targetId = videoId;
 
@@ -456,10 +519,17 @@ export async function saveVideo(
       };
     }
 
+    // An upload-sourced record must end up with a file, whether it
+    // was attached now or already present.
+    if (provider === "upload" && !uploadedPath && !existing.storagePath) {
+      return { ok: false, message: "Choose a video file before saving." };
+    }
+
     const { error } = await supabase
       .from("videos")
       .update({
         ...row,
+        ...uploadColumns,
         published_at: publish
           ? (existing.publishedAt ?? row.published_at)
           : null,
@@ -471,9 +541,13 @@ export async function saveVideo(
       return { ok: false, message: describeDbError(error.message) };
     }
   } else {
+    if (provider === "upload" && !uploadedPath) {
+      return { ok: false, message: "Choose a video file before saving." };
+    }
+
     const { data, error } = await supabase
       .from("videos")
-      .insert({ ...row, created_by: user.id })
+      .insert({ ...row, ...uploadColumns, created_by: user.id })
       .select("id")
       .single();
 

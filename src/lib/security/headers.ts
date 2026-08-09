@@ -128,7 +128,9 @@ export function buildContentSecurityPolicy({
     `img-src ${[SELF, "data:", "blob:", "https://coin-images.coingecko.com", ...imageOrigins, ...(adsEnabled ? ADSENSE.image : [])].join(" ")}`,
     `font-src ${SELF}`,
     `connect-src ${connect}${isDev ? " ws:" : ""}`,
-    `media-src ${SELF}`,
+    // Uploaded vlog files stream from Supabase Storage. Same host
+    // as the images, and the same two-gate rule applies.
+    `media-src ${[SELF, ...imageOrigins].join(" ")}`,
     // Vlog episodes. youtube-nocookie.com is the privacy-preserving
     // player origin (no tracking cookies before playback); the normal
     // youtube.com host is deliberately NOT allowed to frame us. Paired

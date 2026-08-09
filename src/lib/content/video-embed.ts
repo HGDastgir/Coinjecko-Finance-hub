@@ -23,6 +23,38 @@ export type PlayableSource =
   | { kind: "youtube"; embedUrl: string; watchUrl: string }
   | { kind: "file"; src: string };
 
+/**
+ * A storage object key: the shape buildVideoStoragePath produces. No
+ * scheme, no leading slash, no traversal — anything else is refused
+ * rather than concatenated into a public URL.
+ */
+const STORAGE_KEY = /^[A-Za-z0-9][A-Za-z0-9._\-/]*$/;
+
+/**
+ * Public URL for an uploaded video.
+ *
+ * Separate from resolveVideoSource because it needs the Supabase
+ * origin, which server components have and this module deliberately
+ * does not import — keeping it a pure function keeps it testable.
+ */
+export function resolveUploadedVideo(
+  storagePath: string | null,
+  supabaseUrl: string | undefined,
+  bucket = "video-media",
+): PlayableSource | null {
+  if (!storagePath || !supabaseUrl) return null;
+  // Not normalised, refused. buildVideoStoragePath never emits a
+  // leading slash, so one arriving here means the value did not come
+  // from an upload ticket — and quietly rewriting it into something
+  // valid would hide that rather than surface it.
+  const key = storagePath.trim();
+  if (!STORAGE_KEY.test(key) || key.includes("..")) return null;
+  return {
+    kind: "file",
+    src: `${supabaseUrl.replace(/\/+$/, "")}/storage/v1/object/public/${bucket}/${key}`,
+  };
+}
+
 export function resolveVideoSource(
   provider: string | null,
   providerRef: string | null,
