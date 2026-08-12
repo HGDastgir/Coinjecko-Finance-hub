@@ -2,6 +2,7 @@ import "server-only";
 import { z } from "zod";
 import { serverEnv } from "@/lib/env";
 import { logger } from "@/lib/logger";
+import { lastCsvQuote } from "@/lib/markets/csv-quote";
 
 /**
  * Live commodity benchmarks.
@@ -92,6 +93,36 @@ const eiaSchema = z.object({
   }),
 });
 
+/**
+ * Keyless fallback for the oil benchmarks.
+ *
+ * The EIA's own API needs a free key, which not every deployment will
+ * have. Rather than gating the two oil cards behind that, this reads
+ * the same EIA spot series republished as a public-domain dataset
+ * (ODC-PDDL) on datahub.io — real figures from the same primary
+ * source, no registration.
+ *
+ * The trade-off is freshness: the republished file typically trails
+ * the EIA by several business days. That is acceptable ONLY because
+ * every quote carries its own date through to the UI, which prints it
+ * next to the price. A stale number shown as current would break the
+ * honest-data rule; a stale number shown WITH its date is just an
+ * older reading, and the reader can see that.
+ *
+ * With COMMODITY_DATA_API_KEY set, the EIA API is used instead and
+ * this is never reached.
+ */
+const DATAHUB_BASE =
+  "https://raw.githubusercontent.com/datasets/oil-prices/main/data";
+
+const DATAHUB_FILES: Record<string, string> = {
+  "brent-oil": "brent-daily.csv",
+  "wti-oil": "wti-daily.csv",
+};
+
+const DATAHUB_PROVIDER = "U.S. EIA via datahub.io";
+const DATAHUB_PROVIDER_URL = "https://datahub.io/core/oil-prices";
+
 const REFRESH_MS = 60 * 1000;
 const STALE_GRACE_MS = 15 * 60 * 1000;
 
@@ -172,10 +203,10 @@ async function fetchMetals(): Promise<CommodityQuotes> {
 }
 
 async function fetchOil(): Promise<CommodityQuotes> {
-  const empty: CommodityQuotes = { "brent-oil": null, "wti-oil": null };
-
   const apiKey = serverEnv().COMMODITY_DATA_API_KEY;
-  if (!apiKey) return empty;
+  // No key is no longer a dead end: fall back to the same EIA series
+  // republished as public-domain data. Slightly older, fully dated.
+  if (!apiKey) return fetchOilFromDatahub();
 
   const entries = await Promise.all(
     Object.entries(OIL_SERIES).map(async ([slug, series]) => {
@@ -224,6 +255,59 @@ async function fetchOil(): Promise<CommodityQuotes> {
       } catch (err) {
         logger.warn("commodity.oil_fetch_failed", {
           series,
+          reason: err instanceof Error ? err.message : "unknown",
+        });
+        return [slug, null] as const;
+      }
+    }),
+  );
+
+  return Object.fromEntries(entries);
+}
+
+/**
+ * The keyless oil path. Each benchmark is fetched independently so one
+ * failing file cannot take the other down with it.
+ */
+async function fetchOilFromDatahub(): Promise<CommodityQuotes> {
+  const entries = await Promise.all(
+    Object.entries(DATAHUB_FILES).map(async ([slug, file]) => {
+      try {
+        const response = await fetch(`${DATAHUB_BASE}/${file}`, {
+          headers: { accept: "text/csv" },
+          signal: AbortSignal.timeout(8000),
+          // The file changes at most daily; an hour is generous.
+          next: { revalidate: 3600 },
+        });
+
+        if (!response.ok) {
+          logger.warn("commodity.oil_fallback_error", {
+            file,
+            status: response.status,
+          });
+          return [slug, null] as const;
+        }
+
+        const quote = lastCsvQuote(await response.text());
+        if (!quote) {
+          logger.warn("commodity.oil_fallback_unparsed", { file });
+          return [slug, null] as const;
+        }
+
+        return [
+          slug,
+          {
+            price: quote.price,
+            quotedAt: `${quote.date}T00:00:00Z`,
+            provider: DATAHUB_PROVIDER,
+            providerUrl: DATAHUB_PROVIDER_URL,
+            // A settled daily close, republished — never a live tick.
+            isReference: true,
+          },
+        ] as const;
+      } catch (err) {
+        logger.warn("commodity.oil_fallback_failed", {
+          file,
           reason: err instanceof Error ? err.message : "unknown",
         });
         return [slug, null] as const;
