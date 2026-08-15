@@ -6,6 +6,7 @@ import { hasPermission } from "@/lib/auth/permissions";
 import {
   listContactMessages,
   TOPIC_LABELS,
+  type ContactTopic,
 } from "@/lib/content/contact-inbox";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 import { MessageHandledButton } from "@/components/admin/MessageHandledButton";
@@ -42,6 +43,46 @@ function formatReceived(iso: string): string {
     timeZone: "UTC",
     hour12: false,
   }).format(parsed)} UTC`;
+}
+
+/**
+ * Subject line for a reply, carrying the topic so the thread is
+ * self-describing wherever it lands.
+ */
+function replySubject(topic: ContactTopic): string {
+  return `Re: your ${TOPIC_LABELS[topic].toLowerCase()} enquiry — CoinJecko Finance Hub`;
+}
+
+/**
+ * Hands off to whatever mail client the operating system registered.
+ *
+ * encodeURIComponent, NOT URLSearchParams: the latter encodes a space
+ * as "+", which is right for an HTTP query string and wrong here.
+ * RFC 6068 mailto URIs are read as plain percent-encoding, so a mail
+ * client shows the "+" literally — "Re:+your+advertising+enquiry".
+ */
+function mailtoHref(email: string, topic: ContactTopic): string {
+  return `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(
+    replySubject(topic),
+  )}`;
+}
+
+/**
+ * Gmail's compose URL. Needed because mailto: is inert on a machine
+ * with no desktop mail app — the normal state for someone who reads
+ * mail in a browser tab, and the reason replying was awkward.
+ *
+ * Built with URLSearchParams so the subject's spaces and em dash are
+ * encoded properly rather than truncating the query.
+ */
+function gmailComposeHref(email: string, topic: ContactTopic): string {
+  const params = new URLSearchParams({
+    view: "cm",
+    fs: "1",
+    to: email,
+    su: replySubject(topic),
+  });
+  return `https://mail.google.com/mail/?${params.toString()}`;
 }
 
 export default async function AdminMessagesPage({
@@ -118,21 +159,14 @@ export default async function AdminMessagesPage({
                 </time>
               </div>
 
-              {/* The whole point of the page: one click to answer.
-                  The subject carries the topic so a reply thread is
-                  self-describing in the mail client. */}
               <span className="mt-1 flex flex-wrap items-center gap-2">
                 <a
                   id={`addr-${m.id}`}
-                  href={`mailto:${encodeURIComponent(m.email)}?subject=${encodeURIComponent(
-                    `Re: your ${TOPIC_LABELS[m.topic].toLowerCase()} enquiry — CoinJecko Finance Hub`,
-                  )}`}
+                  href={mailtoHref(m.email, m.topic)}
                   className="font-latin text-sm text-brand underline decoration-dotted underline-offset-2"
                 >
                   {m.email}
                 </a>
-                {/* mailto: is silent when no default mail app is set,
-                    which is the normal state for a webmail user. */}
                 <CopyEmailButton email={m.email} addressId={`addr-${m.id}`} />
               </span>
 
@@ -152,11 +186,34 @@ export default async function AdminMessagesPage({
                     "Awaiting reply"
                   )}
                 </span>
-                <MessageHandledButton
-                  messageId={m.id}
-                  locale={safeLocale}
-                  handled={Boolean(m.handledAt)}
-                />
+
+                <div className="flex flex-wrap items-center gap-2">
+                  {/* Two routes to the same reply, because neither
+                      works for everyone. mailto: is the standard and
+                      provider-neutral, but does nothing — silently —
+                      when no desktop mail app is registered. Gmail
+                      always opens in a browser tab but assumes the
+                      account. Offering both beats guessing. */}
+                  <a
+                    href={mailtoHref(m.email, m.topic)}
+                    className="rounded-md bg-brand px-3 py-1.5 text-xs font-semibold text-brand-contrast hover:bg-brand-strong"
+                  >
+                    Reply
+                  </a>
+                  <a
+                    href={gmailComposeHref(m.email, m.topic)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-ink-muted hover:bg-surface-raised"
+                  >
+                    Gmail ↗
+                  </a>
+                  <MessageHandledButton
+                    messageId={m.id}
+                    locale={safeLocale}
+                    handled={Boolean(m.handledAt)}
+                  />
+                </div>
               </div>
             </li>
           ))}
