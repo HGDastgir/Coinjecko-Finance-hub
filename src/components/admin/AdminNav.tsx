@@ -15,25 +15,38 @@ export function AdminNav({
   locale,
   canEditContent,
   canManageVideos,
+  canReadMessages,
+  unreadMessages = 0,
   signedInAs,
 }: {
   locale: Locale;
   canEditContent: boolean;
   canManageVideos: boolean;
+  canReadMessages: boolean;
+  /** Unread contact messages, shown as a badge on the Messages tab. */
+  unreadMessages?: number;
   /** Email or id of the current user, shown so the account is obvious. */
   signedInAs?: string | null;
 }) {
   const items = [
-    { href: `/${locale}/admin`, label: "Overview", show: true },
+    { href: `/${locale}/admin`, label: "Overview", show: true, badge: 0 },
     {
       href: `/${locale}/admin/articles/new`,
       label: "New article",
       show: canEditContent,
+      badge: 0,
     },
     {
       href: `/${locale}/admin/videos`,
       label: "Videos",
       show: canManageVideos,
+      badge: 0,
+    },
+    {
+      href: `/${locale}/admin/messages`,
+      label: "Messages",
+      show: canReadMessages,
+      badge: unreadMessages,
     },
   ].filter((item) => item.show);
 
@@ -46,9 +59,18 @@ export function AdminNav({
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className="block rounded-md px-3 py-2 text-sm hover:bg-surface-raised"
+                  className="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-surface-raised"
                 >
                   {item.label}
+                  {item.badge > 0 ? (
+                    // Not colour alone: the count itself is the signal,
+                    // and the label spells out what it counts for a
+                    // screen reader rather than reading "Messages 3".
+                    <span className="rounded-full bg-brand px-1.5 py-0.5 font-latin text-xs font-semibold text-brand-contrast">
+                      {item.badge}
+                      <span className="sr-only"> awaiting reply</span>
+                    </span>
+                  ) : null}
                 </Link>
               </li>
             ))}

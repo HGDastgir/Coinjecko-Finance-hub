@@ -28,7 +28,9 @@ export type AuditAction =
   | "user.deactivated"
   | "api_config.changed"
   | "advertisement.changed"
-  | "newsletter.exported";
+  | "newsletter.exported"
+  | "contact.marked_handled"
+  | "contact.reopened";
 
 export interface AuditEvent {
   actorId: string | null;
