@@ -9,6 +9,7 @@ import {
 } from "@/lib/content/contact-inbox";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 import { MessageHandledButton } from "@/components/admin/MessageHandledButton";
+import { CopyEmailButton } from "@/components/admin/CopyEmailButton";
 
 export const dynamic = "force-dynamic";
 
@@ -120,14 +121,20 @@ export default async function AdminMessagesPage({
               {/* The whole point of the page: one click to answer.
                   The subject carries the topic so a reply thread is
                   self-describing in the mail client. */}
-              <a
-                href={`mailto:${encodeURIComponent(m.email)}?subject=${encodeURIComponent(
-                  `Re: your ${TOPIC_LABELS[m.topic].toLowerCase()} enquiry — CoinJecko Finance Hub`,
-                )}`}
-                className="mt-1 inline-block font-latin text-sm text-brand underline decoration-dotted underline-offset-2"
-              >
-                {m.email}
-              </a>
+              <span className="mt-1 flex flex-wrap items-center gap-2">
+                <a
+                  id={`addr-${m.id}`}
+                  href={`mailto:${encodeURIComponent(m.email)}?subject=${encodeURIComponent(
+                    `Re: your ${TOPIC_LABELS[m.topic].toLowerCase()} enquiry — CoinJecko Finance Hub`,
+                  )}`}
+                  className="font-latin text-sm text-brand underline decoration-dotted underline-offset-2"
+                >
+                  {m.email}
+                </a>
+                {/* mailto: is silent when no default mail app is set,
+                    which is the normal state for a webmail user. */}
+                <CopyEmailButton email={m.email} addressId={`addr-${m.id}`} />
+              </span>
 
               {/* Stored and rendered as plain text. A visitor-supplied
                   string is the last thing that should reach a
