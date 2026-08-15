@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
+import { CoinGeckoLink } from "@/components/markets/CoinGeckoLink";
 import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import { Sparkline } from "@/components/markets/Sparkline";
@@ -39,6 +40,7 @@ export interface MarketTableLabels {
   unavailable: string;
   quotedAt: string;
   attribution: string;
+  liveOnCoinGecko: string;
 }
 
 type Movement = "all" | "gainers" | "losers";
@@ -192,6 +194,14 @@ export function CryptoMarketTable({
                         </span>
                       </span>
                     </Link>
+                    {/* Outside the Link above — an anchor cannot nest
+                        inside another. Our page carries the editorial
+                        guide; this goes to the live rate. */}
+                    <CoinGeckoLink
+                      slug={quote.slug}
+                      label={labels.liveOnCoinGecko}
+                      className="mt-1 ps-9"
+                    />
                   </th>
                   <td className="px-4 py-3 text-end font-latin tabular-nums">
                     {formatUsd(quote.priceUsd)}

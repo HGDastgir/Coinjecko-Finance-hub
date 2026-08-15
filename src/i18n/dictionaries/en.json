@@ -137,6 +137,7 @@
     "adviceAnswer": "No. CoinJecko / Finance Hub publishes market information and educational context only. Always conduct independent research and consult a qualified professional before making financial decisions.",
     "unit": "Unit",
     "quotedIn": "Quoted in",
+    "liveOnCoinGecko": "Live rate on CoinGecko",
     "symbol": "Symbol",
     "rateNote": "Daily reference rate — not a dealing rate. Banks and exchanges will differ.",
     "noEditorialCoverage": "We have not published an editorial guide for this asset yet. The market data below comes from CoinGecko; the written context our covered assets carry is not available here."
@@ -348,7 +349,8 @@
     "filterAll": "All",
     "filterGainers": "Gainers",
     "filterLosers": "Losers",
-    "noMatches": "No coins match your search."
+    "noMatches": "No coins match your search.",
+    "liveOnCoinGecko": "Live rate on CoinGecko"
   },
   "globalStats": {
     "heading": "Global crypto market statistics",

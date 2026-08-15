@@ -2,6 +2,7 @@ import "server-only";
 import { z } from "zod";
 import { serverEnv } from "@/lib/env";
 import { logger } from "@/lib/logger";
+import { SLUG_BY_COINGECKO_ID } from "@/lib/markets/coingecko";
 
 /**
  * Live crypto market data from CoinGecko — price, 24h change, market
@@ -33,17 +34,6 @@ import { logger } from "@/lib/logger";
  * and the UI shows its disconnected state; it will never invent or
  * indefinitely freeze a price.
  */
-
-/** Site slug → CoinGecko id. They differ for XRP and BNB. */
-const COINGECKO_IDS: Record<string, string> = {
-  bitcoin: "bitcoin",
-  ethereum: "ethereum",
-  tether: "tether",
-  xrp: "ripple",
-  bnb: "binancecoin",
-  solana: "solana",
-  cardano: "cardano",
-};
 
 const ENDPOINT = "https://api.coingecko.com/api/v3/coins/markets";
 const GLOBAL_ENDPOINT = "https://api.coingecko.com/api/v3/global";
@@ -134,9 +124,6 @@ function everyNth(series: number[], n: number): number[] {
   return thinned;
 }
 
-const SLUG_BY_COINGECKO_ID = new Map(
-  Object.entries(COINGECKO_IDS).map(([slug, id]) => [id, slug]),
-);
 
 /** How long a payload counts as fresh. */
 const REFRESH_MS = 60_000;

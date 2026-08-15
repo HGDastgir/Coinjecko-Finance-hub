@@ -6,6 +6,42 @@ import { buildPageMetadata } from "@/lib/seo/metadata";
 import { CRYPTO_ASSETS, getCryptoBySlug } from "@/lib/markets/asset-data";
 import { AssetDetail } from "@/components/markets/AssetDetail";
 import { fetchCryptoMarkets } from "@/lib/markets/crypto-market";
+import { coinGeckoCoinUrl } from "@/lib/markets/coingecko";
+import { formatQuoteTime } from "@/lib/markets/quote-time";
+
+/**
+ * Crypto prices span nine orders of magnitude, so a fixed two-decimal
+ * format would render most of the long tail as /usr/bin/bash.00. Sub-dollar
+ * coins get the precision they need; the rest stay readable.
+ */
+function formatCoinPrice(price: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: price < 1 ? 6 : 2,
+  }).format(price);
+}
+
+/**
+ * The quote block for a coin. CoinGecko is both the source of the
+ * figure and where a reader goes for the live rate, so the provider
+ * link doubles as the live-rate link rather than adding a second one.
+ */
+function coinQuote(
+  slug: string,
+  priceUsd: number,
+  quotedAt: string,
+  locale: Locale,
+) {
+  return {
+    price: formatCoinPrice(priceUsd),
+    quotedAt: formatQuoteTime(quotedAt, locale),
+    provider: "CoinGecko",
+    providerUrl: coinGeckoCoinUrl(slug) ?? "https://www.coingecko.com",
+    isReference: false,
+  };
+}
 
 /**
  * The market table now lists the top 250 coins, so any of them must
@@ -64,6 +100,7 @@ export default async function CoinPage({
         sectionPath="/crypto"
         title={quote.name}
         chips={[quote.symbol]}
+        quote={coinQuote(quote.slug, quote.priceUsd, quote.quotedAt, locale)}
         // No editorial copy exists for this coin, and inventing one is
         // exactly what the honest-data rule forbids. Say so plainly.
         description={dict.assets.noEditorialCoverage}
@@ -78,6 +115,12 @@ export default async function CoinPage({
     );
   }
 
+  // The coin pages used to show "provider not connected" while the
+  // market table on /crypto displayed a live price for the same coin.
+  // Same feed, same cache — there was no reason for the inconsistency.
+  const markets = await fetchCryptoMarkets();
+  const live = markets?.quotes.find((q) => q.slug === asset.slug);
+
   return (
     <AssetDetail
       locale={locale}
@@ -86,6 +129,11 @@ export default async function CoinPage({
       sectionPath="/crypto"
       title={asset.name}
       chips={[asset.symbol]}
+      quote={
+        live
+          ? coinQuote(asset.slug, live.priceUsd, live.quotedAt, locale)
+          : null
+      }
       description={asset.description}
       whyItMatters={asset.whyItMatters}
       riskNote={dict.assets.cryptoRisk}
