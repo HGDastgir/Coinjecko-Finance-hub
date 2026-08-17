@@ -15,6 +15,7 @@ export function AdminNav({
   locale,
   canEditContent,
   canManageVideos,
+  canManageAds,
   canReadMessages,
   unreadMessages = 0,
   signedInAs,
@@ -22,6 +23,7 @@ export function AdminNav({
   locale: Locale;
   canEditContent: boolean;
   canManageVideos: boolean;
+  canManageAds: boolean;
   canReadMessages: boolean;
   /** Unread contact messages, shown as a badge on the Messages tab. */
   unreadMessages?: number;
@@ -40,6 +42,12 @@ export function AdminNav({
       href: `/${locale}/admin/videos`,
       label: "Videos",
       show: canManageVideos,
+      badge: 0,
+    },
+    {
+      href: `/${locale}/admin/ads`,
+      label: "Advertising",
+      show: canManageAds,
       badge: 0,
     },
     {

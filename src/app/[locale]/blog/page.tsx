@@ -94,7 +94,12 @@ export default async function BlogIndexPage({
         />
       </div>
 
-      <AdSlot placement="top-leaderboard" label={dict.ads.label} />
+      <AdSlot
+        placement="top-leaderboard"
+        label={dict.ads.label}
+        locale={safeLocale}
+        path="/blog"
+      />
 
       {topicLabel ? (
         <p className="mt-6 flex flex-wrap items-center gap-3 text-sm">
@@ -129,7 +134,12 @@ export default async function BlogIndexPage({
                     between the first few — a feed that opens with an
                     ad reads as an ad page. */}
                 {index === 4 ? (
-                  <AdSlot placement="in-feed" label={dict.ads.label} />
+                  <AdSlot
+                    placement="in-feed"
+                    label={dict.ads.label}
+                    locale={safeLocale}
+                    path="/blog"
+                  />
                 ) : null}
                 <article className="rounded-lg border border-border bg-surface p-5">
                   <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink-muted">

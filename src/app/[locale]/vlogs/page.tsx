@@ -72,7 +72,12 @@ export default async function VlogsIndexPage({
         />
       </div>
 
-      <AdSlot placement="top-leaderboard" label={dict.ads.label} />
+      <AdSlot
+        placement="top-leaderboard"
+        label={dict.ads.label}
+        locale={safeLocale}
+        path="/vlogs"
+      />
 
       {videos === null ? (
         <p className="mt-8 rounded-lg border border-dashed border-border bg-surface p-4 text-sm leading-relaxed text-ink-muted">

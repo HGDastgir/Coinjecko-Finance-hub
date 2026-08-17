@@ -100,7 +100,12 @@ export function SectionLanding({
         </ul>
       </section>
 
-      <AdSlot placement="section-footer" label={dict.ads.label} />
+      <AdSlot
+        placement="section-footer"
+        label={dict.ads.label}
+        locale={locale}
+        path={path}
+      />
 
       <section aria-labelledby="related-heading" className="mt-10">
         <h2 id="related-heading" className="text-xl font-semibold">

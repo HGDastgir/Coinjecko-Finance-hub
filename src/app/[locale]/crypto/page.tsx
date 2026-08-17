@@ -5,6 +5,7 @@ import { getDictionary } from "@/i18n/get-dictionary";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 import { breadcrumbSchema, serializeJsonLd } from "@/lib/seo/json-ld";
 import { publicEnv } from "@/lib/env";
+import { AdSlot } from "@/components/layout/AdSlot";
 import { CRYPTO_ASSETS } from "@/lib/markets/asset-data";
 import { CoinGeckoLink } from "@/components/markets/CoinGeckoLink";
 import { CryptoMarketTable } from "@/components/markets/CryptoMarketTable";
@@ -103,6 +104,13 @@ export default async function CryptoPage({
           ))}
         </ul>
       </section>
+
+      <AdSlot
+        placement="section-footer"
+        label={dict.ads.label}
+        locale={safeLocale}
+        path="/crypto"
+      />
 
       <p className="mt-8 text-xs text-ink-muted">{dict.data.notAdvice}</p>
     </div>

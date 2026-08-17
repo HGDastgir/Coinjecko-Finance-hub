@@ -191,7 +191,12 @@ export default async function VlogPage({
         )}
       </div>
 
-      <AdSlot placement="below-player" label={dict.ads.label} />
+      <AdSlot
+        placement="below-player"
+        label={dict.ads.label}
+        locale={safeLocale}
+        path={`/vlogs/${video.slug}`}
+      />
 
       {video.description ? (
         <p className="mt-6 leading-relaxed">{video.description}</p>

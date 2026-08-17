@@ -5,6 +5,7 @@ import { getDictionary } from "@/i18n/get-dictionary";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 import { breadcrumbSchema, serializeJsonLd } from "@/lib/seo/json-ld";
 import { publicEnv } from "@/lib/env";
+import { AdSlot } from "@/components/layout/AdSlot";
 import { COMMODITIES } from "@/lib/markets/asset-data";
 import {
   fetchCommodityQuotes,
@@ -121,6 +122,13 @@ export default async function CommoditiesPage({
           );
         })}
       </ul>
+
+      <AdSlot
+        placement="section-footer"
+        label={dict.ads.label}
+        locale={safeLocale}
+        path="/commodities"
+      />
 
       <p className="mt-8 text-xs text-ink-muted">{dict.data.notAdvice}</p>
     </div>

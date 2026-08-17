@@ -34,3 +34,27 @@ export type AdPlacement = keyof typeof AD_PLACEMENTS;
 export function isAdPlacement(value: unknown): value is AdPlacement {
   return typeof value === "string" && value in AD_PLACEMENTS;
 }
+
+/**
+ * The `kind` column's vocabulary, mirrored from the check constraint in
+ * migration 0002.
+ *
+ * `adsense` means "leave this slot to the network" and is the only kind
+ * that renders no creative of ours; every other kind is inventory sold
+ * directly and must carry a destination. The labels are what the
+ * booking form shows.
+ */
+export const AD_KINDS = {
+  direct: "Direct display campaign",
+  affiliate: "Affiliate placement",
+  sponsored_article: "Sponsored article promo",
+  newsletter_sponsor: "Newsletter sponsor",
+  podcast_sponsor: "Podcast sponsor",
+  adsense: "AdSense (network fills the slot)",
+} as const;
+
+export type AdKind = keyof typeof AD_KINDS;
+
+export function isAdKind(value: unknown): value is AdKind {
+  return typeof value === "string" && value in AD_KINDS;
+}

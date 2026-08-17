@@ -4,6 +4,7 @@ import { getDictionary } from "@/i18n/get-dictionary";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 import { breadcrumbSchema, serializeJsonLd } from "@/lib/seo/json-ld";
 import { publicEnv } from "@/lib/env";
+import { AdSlot } from "@/components/layout/AdSlot";
 import {
   CALENDAR_COUNTRIES,
   getUpcomingEvents,
@@ -132,6 +133,13 @@ export default async function EconomyPage({
           locale={safeLocale}
         />
       </section>
+
+      <AdSlot
+        placement="section-footer"
+        label={dict.ads.label}
+        locale={safeLocale}
+        path="/economy"
+      />
 
       <p className="mt-8 text-xs text-ink-muted">{dict.data.notAdvice}</p>
     </div>

@@ -68,7 +68,12 @@ export default async function HomePage({
 
       <div className="mx-auto max-w-6xl px-4">
 
-      <AdSlot placement="top-leaderboard" label={dict.ads.label} />
+      <AdSlot
+        placement="top-leaderboard"
+        label={dict.ads.label}
+        locale={safeLocale}
+        path="/"
+      />
 
       {/* World exchange status */}
       <section aria-labelledby="exchange-status-heading" className="py-8">
@@ -143,7 +148,12 @@ export default async function HomePage({
         </ul>
       </section>
 
-      <AdSlot placement="in-feed" label={dict.ads.label} />
+      <AdSlot
+        placement="in-feed"
+        label={dict.ads.label}
+        locale={safeLocale}
+        path="/"
+      />
 
       {/* Newsroom */}
       <section aria-labelledby="newsroom-heading" className="py-8">

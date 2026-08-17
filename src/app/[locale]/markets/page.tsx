@@ -5,6 +5,7 @@ import { getDictionary } from "@/i18n/get-dictionary";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 import { breadcrumbSchema, serializeJsonLd } from "@/lib/seo/json-ld";
 import { publicEnv } from "@/lib/env";
+import { AdSlot } from "@/components/layout/AdSlot";
 import {
   INDICES,
   MARKET_HUBS,
@@ -157,6 +158,16 @@ export default async function MarketsPage({
           );
         })}
       </section>
+
+      {/* At the foot, deliberately. An ad between quotes on a market
+          page reads as a recommendation, which is exactly the thing
+          the disclosure rules exist to prevent. */}
+      <AdSlot
+        placement="section-footer"
+        label={dict.ads.label}
+        locale={safeLocale}
+        path="/markets"
+      />
     </div>
   );
 }

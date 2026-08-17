@@ -67,7 +67,12 @@ export default async function BreakingNewsPage({
       />
       <p className="mt-4 max-w-2xl text-ink-muted">{b.lead}</p>
 
-      <AdSlot placement="top-leaderboard" label={dict.ads.label} />
+      <AdSlot
+        placement="top-leaderboard"
+        label={dict.ads.label}
+        locale={safeLocale}
+        path="/breaking-news"
+      />
 
       {items === null ? (
         <p className="mt-8 rounded-lg border border-dashed border-border bg-surface p-4 text-sm leading-relaxed text-ink-muted">

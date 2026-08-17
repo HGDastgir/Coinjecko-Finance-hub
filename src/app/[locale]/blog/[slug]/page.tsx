@@ -26,13 +26,25 @@ export const revalidate = 120;
  * set of line prefixes the body understands and why the mapping is
  * done here, in React, rather than by interpreting stored markup.
  */
-function renderBlocks(blocks: RichTextBlock[], adLabel: string) {
+function renderBlocks(
+  blocks: RichTextBlock[],
+  adLabel: string,
+  locale: Locale,
+  path: string,
+) {
   return blocks.map((block, i) => {
     // In-article unit after the third block: past the point where the
     // reader has committed, before the piece runs long. Short pieces
     // never reach it and stay ad-free in the body.
     const ad =
-      i === 3 ? <AdSlot placement="in-article" label={adLabel} /> : null;
+      i === 3 ? (
+        <AdSlot
+          placement="in-article"
+          label={adLabel}
+          locale={locale}
+          path={path}
+        />
+      ) : null;
 
     if (block.kind === "heading") {
       const Tag = block.level === 2 ? "h2" : "h3";
@@ -252,10 +264,20 @@ export default async function ArticlePage({
         ) : null}
 
         <div className="mt-6 space-y-4 leading-relaxed">
-          {renderBlocks(parseRichText(article.body), dict.ads.label)}
+          {renderBlocks(
+            parseRichText(article.body),
+            dict.ads.label,
+            safeLocale,
+            `/blog/${article.slug}`,
+          )}
         </div>
 
-        <AdSlot placement="article-end" label={dict.ads.label} />
+        <AdSlot
+          placement="article-end"
+          label={dict.ads.label}
+          locale={safeLocale}
+          path={`/blog/${article.slug}`}
+        />
 
         {article.sources.length > 0 ? (
           <section aria-labelledby="sources-heading" className="mt-10">

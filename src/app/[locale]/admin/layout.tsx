@@ -43,6 +43,7 @@ export default async function AdminLayout({
         locale={safeLocale}
         canEditContent={hasPermission(user.role, "content.create")}
         canManageVideos={hasPermission(user.role, "media.manage_video")}
+        canManageAds={hasPermission(user.role, "ads.manage")}
         canReadMessages={canReadMessages}
         unreadMessages={unreadMessages}
         signedInAs={user.email ?? user.displayName}

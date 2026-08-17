@@ -5,8 +5,8 @@ import { getDictionary } from "@/i18n/get-dictionary";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 import { breadcrumbSchema, serializeJsonLd } from "@/lib/seo/json-ld";
 import { publicEnv } from "@/lib/env";
+import { AdSlot } from "@/components/layout/AdSlot";
 import {
-
   FOREX_PAIRS,
   type ForexPairInfo,
 } from "@/lib/markets/asset-data";
@@ -121,6 +121,13 @@ export default async function ForexPage({
         </h2>
         <PairList pairs={majors} locale={safeLocale} />
       </section>
+
+      <AdSlot
+        placement="section-footer"
+        label={dict.ads.label}
+        locale={safeLocale}
+        path="/forex"
+      />
 
       <p className="mt-8 text-xs text-ink-muted">{dict.data.notAdvice}</p>
     </div>
